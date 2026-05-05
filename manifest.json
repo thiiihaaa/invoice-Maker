@@ -1,0 +1,35 @@
+{
+  "name": "Invoice Maker",
+  "short_name": "Invoice",
+  "description": "Cute & minimal invoice maker with MMK currency support",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#FF85BB",
+  "background_color": "#FFCEE3",
+  "categories": ["business", "finance", "productivity"],
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "New Invoice",
+      "short_name": "New",
+      "description": "Create a fresh invoice",
+      "url": "./index.html",
+      "icons": [{ "src": "icon.svg", "sizes": "any" }]
+    }
+  ]
+}

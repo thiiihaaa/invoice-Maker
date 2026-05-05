@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Navy rounded background -->
+  <rect width="512" height="512" rx="110" fill="#021A54"/>
+
+  <!-- Soft glow blob -->
+  <ellipse cx="370" cy="150" rx="90" ry="80" fill="#FF85BB" opacity="0.18"/>
+  <ellipse cx="140" cy="370" rx="70" ry="60" fill="#FFCEE3" opacity="0.15"/>
+
+  <!-- Receipt card -->
+  <rect x="128" y="72" width="256" height="316" rx="22" fill="#FFCEE3"/>
+
+  <!-- Receipt header bar -->
+  <rect x="128" y="72" width="256" height="68" rx="22" fill="#FF85BB"/>
+  <rect x="128" y="112" width="256" height="28" fill="#FF85BB"/>
+
+  <!-- Header text lines (white) -->
+  <rect x="160" y="92" width="120" height="11" rx="5.5" fill="white" opacity="0.95"/>
+  <rect x="160" y="110" width="80" height="8" rx="4" fill="white" opacity="0.55"/>
+
+  <!-- Line items -->
+  <rect x="158" y="162" width="140" height="9" rx="4.5" fill="#021A54" opacity="0.55"/>
+  <rect x="330" y="162" width="46" height="9" rx="4.5" fill="#FF85BB"/>
+
+  <rect x="158" y="186" width="110" height="9" rx="4.5" fill="#021A54" opacity="0.38"/>
+  <rect x="330" y="186" width="46" height="9" rx="4.5" fill="#FF85BB" opacity="0.7"/>
+
+  <rect x="158" y="210" width="128" height="9" rx="4.5" fill="#021A54" opacity="0.38"/>
+  <rect x="330" y="210" width="46" height="9" rx="4.5" fill="#FF85BB" opacity="0.7"/>
+
+  <rect x="158" y="234" width="95" height="9" rx="4.5" fill="#021A54" opacity="0.38"/>
+  <rect x="330" y="234" width="46" height="9" rx="4.5" fill="#FF85BB" opacity="0.7"/>
+
+  <!-- Divider -->
+  <rect x="158" y="260" width="218" height="2" rx="1" fill="#021A54" opacity="0.12"/>
+
+  <!-- Grand Total row -->
+  <rect x="158" y="276" width="72" height="11" rx="5.5" fill="#021A54" opacity="0.6"/>
+  <rect x="294" y="273" width="82" height="17" rx="8.5" fill="#FF85BB"/>
+
+  <!-- Zigzag bottom of receipt -->
+  <path d="M128 368 L144 388 L160 368 L176 388 L192 368 L208 388 L224 368 L240 388 L256 368 L272 388 L288 368 L304 388 L320 368 L336 388 L352 368 L368 388 L384 368 L384 388 L128 388 Z" fill="#FFCEE3"/>
+
+  <!-- Sparkle dots -->
+  <circle cx="420" cy="88" r="14" fill="#FF85BB" opacity="0.7"/>
+  <circle cx="444" cy="118" r="8" fill="#FFCEE3" opacity="0.8"/>
+  <circle cx="88"  cy="110" r="10" fill="#FFCEE3" opacity="0.5"/>
+  <circle cx="72"  cy="148" r="5"  fill="#FF85BB" opacity="0.45"/>
+  <circle cx="430" cy="410" r="9"  fill="#FF85BB" opacity="0.4"/>
+
+  <!-- Tiny star sparkles -->
+  <path d="M448 72 L451 80 L459 80 L453 85 L455 93 L448 88 L441 93 L443 85 L437 80 L445 80 Z" fill="#FFCEE3" opacity="0.9"/>
+  <path d="M76 390 L78 396 L84 396 L79 400 L81 406 L76 402 L71 406 L73 400 L68 396 L74 396 Z" fill="#FF85BB" opacity="0.6"/>
+</svg>
