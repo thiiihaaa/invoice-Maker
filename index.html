@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Invoice Maker</title>
 
   <!-- PWA -->
@@ -16,216 +16,275 @@
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Phosphor Icons -->
   <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            navy:  { DEFAULT:'#021A54', light:'#0d2d7a', muted:'#354a7a', soft:'#e8ecf5' },
-            pink:  { DEFAULT:'#FF85BB', light:'#FFCEE3', pale:'#fff0f7', dark:'#e0609a' },
-            smoke: { DEFAULT:'#F5F5F5', dark:'#e8e8e8' },
+            navy: { DEFAULT:'#021A54', soft:'#e8ecf5', border:'#d0d8ef' },
+            pink: { DEFAULT:'#FF85BB', light:'#FFCEE3', pale:'#fff0f7', dark:'#e0609a' },
           }
         }
       }
     }
   </script>
+
   <style>
     @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Serif+Display&display=swap');
 
-    * { font-family: 'DM Sans', sans-serif; }
+    *, *::before, *::after { box-sizing: border-box; }
+    * { font-family: 'DM Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
     .serif { font-family: 'DM Serif Display', serif; }
 
-    body { background: linear-gradient(135deg, #FFCEE3 0%, #F5F5F5 50%, #e8ecf5 100%); }
+    html { scroll-behavior: smooth; }
+    body  { background: linear-gradient(135deg, #FFCEE3 0%, #F5F5F5 55%, #e8ecf5 100%);
+            min-height: 100dvh; }
 
     .glass {
-      background: rgba(255,255,255,0.82);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
+      background: rgba(255,255,255,0.84);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
     }
 
-    /* Floating labels */
-    .fl { position: relative; }
-    .fl input, .fl textarea { padding-top: 1.2rem; padding-bottom: 0.3rem; }
-    .fl label {
-      position: absolute; top: 50%; left: 0.75rem;
-      transform: translateY(-50%); font-size: 0.78rem;
-      color: #9ca3af; pointer-events: none; transition: all .18s ease;
-      display: flex; align-items: center; gap: 4px;
+    /* ── Inputs — ALL 16px to prevent iOS auto-zoom ── */
+    input, textarea, select {
+      font-size: 16px !important;       /* critical: stops iOS zoom */
+      font-family: 'DM Sans', sans-serif;
     }
-    .fl textarea ~ label { top: 0.95rem; transform: none; }
-    .fl input:focus ~ label, .fl input:not(:placeholder-shown) ~ label,
-    .fl textarea:focus ~ label, .fl textarea:not(:placeholder-shown) ~ label {
-      top: 0.3rem; transform: none; font-size: 0.6rem; color: #FF85BB;
-    }
-    .fl label i { font-size: 0.9rem; line-height: 1; }
-
     input[type=number]::-webkit-inner-spin-button,
     input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
 
+    /* Base input styles */
     .inp {
-      background: rgba(255,255,255,0.7);
-      border: 1.5px solid #FFCEE3;
-      border-radius: 0.75rem;
-      color: #021A54;
-      transition: all .18s;
+      width: 100%; background: rgba(255,255,255,0.75);
+      border: 1.5px solid #FFCEE3; border-radius: 14px;
+      color: #021A54; padding: 14px 14px 4px;
+      transition: border-color .18s, box-shadow .18s;
+      line-height: 1.3;
     }
-    .inp:focus { outline: none; border-color: #FF85BB; box-shadow: 0 0 0 3px rgba(255,133,187,0.15); }
+    .inp:focus { outline: none; border-color: #FF85BB; box-shadow: 0 0 0 3px rgba(255,133,187,0.18); }
 
     .inp-navy {
-      background: rgba(255,255,255,0.7);
-      border: 1.5px solid #d0d8ef;
-      border-radius: 0.75rem;
-      color: #021A54;
-      transition: all .18s;
+      width: 100%; background: rgba(255,255,255,0.75);
+      border: 1.5px solid #d0d8ef; border-radius: 14px;
+      color: #021A54; padding: 14px 14px 4px;
+      transition: border-color .18s, box-shadow .18s;
+      line-height: 1.3;
     }
-    .inp-navy:focus { outline: none; border-color: #021A54; box-shadow: 0 0 0 3px rgba(2,26,84,0.1); }
+    .inp-navy:focus { outline: none; border-color: #021A54; box-shadow: 0 0 0 3px rgba(2,26,84,0.12); }
 
-    /* Section label pill */
+    /* Floating label wrapper */
+    .fl { position: relative; }
+    .fl label {
+      position: absolute; left: 14px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px; color: #9ca3af;
+      pointer-events: none; transition: all .18s ease;
+      display: flex; align-items: center; gap: 5px;
+      white-space: nowrap;
+    }
+    .fl label i { font-size: 15px; }
+    .fl textarea ~ label { top: 18px; transform: none; }
+
+    .fl input:focus ~ label,
+    .fl input:not(:placeholder-shown) ~ label,
+    .fl textarea:focus ~ label,
+    .fl textarea:not(:placeholder-shown) ~ label {
+      top: 5px; transform: none;
+      font-size: 10px; color: #FF85BB;
+      letter-spacing: 0.02em;
+    }
+    .fl textarea { padding-top: 26px !important; resize: none; }
+
+    /* touch-friendly text inputs (small variant) */
+    .inp-sm { padding: 10px 12px 4px; border-radius: 10px; font-size: 16px !important; }
+    .fl .inp-sm ~ label { font-size: 12px; left: 12px; }
+    .fl .inp-sm:focus ~ label,
+    .fl .inp-sm:not(:placeholder-shown) ~ label { top: 3px; font-size: 9px; }
+
+    /* Section pill labels */
     .sec-label {
       display: inline-flex; align-items: center; gap: 5px;
-      font-size: 0.7rem; font-weight: 700;
+      font-size: 11px; font-weight: 700;
       letter-spacing: 0.1em; text-transform: uppercase;
-      padding: 3px 10px; border-radius: 99px; margin-bottom: 10px;
+      padding: 4px 12px; border-radius: 99px; margin-bottom: 12px;
     }
-    .sec-label i { font-size: 0.85rem; }
+    .sec-label i { font-size: 13px; }
 
+    /* Buttons: min 44px touch target */
+    button { min-height: 44px; cursor: pointer; touch-action: manipulation; }
+    .btn-icon { min-width: 44px; min-height: 44px; display:flex; align-items:center; justify-content:center; }
+
+    /* Item card (mobile-first card style) */
+    .item-card {
+      border-radius: 16px; padding: 12px;
+      background: rgba(255,206,227,0.2);
+      border: 1.5px solid rgba(255,206,227,0.6);
+    }
+
+    /* Row animation */
     .row-enter { animation: fi .22s ease; }
-    @keyframes fi { from { opacity:0; transform:translateY(-5px); } to { opacity:1; transform:none; } }
+    @keyframes fi { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:none; } }
 
+    /* Totals inputs */
+    .calc-input {
+      background: #F5F5F5; border: 1.5px solid #FFCEE3;
+      border-radius: 10px; text-align: center;
+      font-size: 16px !important; color: #021A54;
+      padding: 6px 8px; min-height: 36px;
+    }
+    .calc-input:focus { outline: none; border-color: #FF85BB; }
+
+    /* Sticky bottom bar (mobile) */
+    .sticky-bar {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 40;
+      padding: 12px 16px;
+      padding-bottom: max(12px, env(safe-area-inset-bottom));
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid #FFCEE3;
+    }
+
+    /* Scrollbar */
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-thumb { background: #FFCEE3; border-radius: 99px; }
 
-    /* icon inside input prefix */
-    .icon-prefix { position:relative; }
-    .icon-prefix i { position:absolute; left:10px; top:50%; transform:translateY(-50%); font-size:1rem; pointer-events:none; }
-    .icon-prefix input { padding-left: 2rem !important; }
-
-    /* ══════════════════════════════
-       PRINT
-    ══════════════════════════════ */
+    /* ══════════════ PRINT ══════════════ */
     @media print {
       @page { size: A4 portrait; margin: 8mm 10mm; }
       * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-
       body { background: white !important; }
-      .no-print { display: none !important; }
-      .fixed    { display: none !important; }
-      footer    { display: none !important; }
+      .no-print, .sticky-bar { display: none !important; }
+      .fixed { display: none !important; }
+      footer { display: none !important; }
 
-      #app {
-        max-width: 100% !important; padding: 0 !important;
-        display: flex !important; flex-direction: column !important; gap: 5px !important;
-      }
-      .glass {
-        background: white !important; backdrop-filter: none !important;
-        box-shadow: none !important; border: 1.5px solid #FFCEE3 !important;
-        border-radius: 8px !important; margin: 0 !important;
-      }
-      .sec-label { padding: 2px 7px !important; margin-bottom: 4px !important; font-size: 0.52rem !important; }
+      #app { max-width:100% !important; padding:0 !important; display:flex !important; flex-direction:column !important; gap:5px !important; }
+      .glass { background:white !important; backdrop-filter:none !important; box-shadow:none !important; border:1.5px solid #FFCEE3 !important; border-radius:8px !important; margin:0 !important; }
+      .sec-label { padding:2px 7px !important; margin-bottom:4px !important; font-size:0.52rem !important; }
+      .item-card { padding:4px 6px !important; border-radius:6px !important; }
 
-      #card-header { padding: 6px 10px !important; }
-      #card-header .serif { font-size: 1.4rem !important; }
-      #card-header .logo-box { width: 42px !important; height: 42px !important; }
-      #card-header .fl input    { font-size: 0.7rem !important; padding-top: 0.75rem !important; padding-bottom: 0.1rem !important; }
-      #card-header .fl textarea { font-size: 0.68rem !important; padding-top: 0.75rem !important; padding-bottom: 0.1rem !important; line-height: 1.2 !important; }
-      #card-header .fl label    { font-size: 0.5rem !important; }
-      #card-header .space-y-1\.5 > * + * { margin-top: 2px !important; }
+      #card-header { padding:6px 10px !important; }
+      #card-header .serif { font-size:1.35rem !important; }
+      #card-header .logo-box { width:40px !important; height:40px !important; }
+      #card-header .inp, #card-header .inp-navy { font-size:0.68rem !important; padding:10px 10px 2px !important; }
+      #card-header .fl label { font-size:0.5rem !important; }
+      #card-header .space-y-2 > * + * { margin-top:3px !important; }
 
-      #card-billto { padding: 5px 10px !important; }
-      #card-billto .fl input  { font-size: 0.7rem !important; padding-top: 0.75rem !important; padding-bottom: 0.1rem !important; }
-      #card-billto .fl label  { font-size: 0.5rem !important; }
-      #card-billto .gap-2 { gap: 3px !important; }
+      #card-billto { padding:5px 10px !important; }
+      #card-billto .inp-navy { font-size:0.68rem !important; padding:10px 10px 2px !important; }
+      #card-billto .fl label { font-size:0.5rem !important; }
 
-      #card-items { padding: 8px 12px !important; }
-      #card-items .col-header { font-size: 0.62rem !important; }
-      #item-rows > div { padding: 4px 6px !important; border-radius: 6px !important; gap: 4px !important; }
-      #item-rows input  { font-size: 0.78rem !important; padding: 3px 6px !important; }
-      #item-rows .row-total { font-size: 0.8rem !important; }
-      #card-items .totals-block span, #card-items .totals-block div { font-size: 0.72rem !important; }
-      #card-items .grand-label { font-size: 0.88rem !important; }
-      #card-items .grand-value { font-size: 1.05rem !important; }
-      #card-items .my-3 { margin-top: 4px !important; margin-bottom: 4px !important; }
-      #card-items .space-y-1\.5 > * + * { margin-top: 3px !important; }
+      /* force Bill To 3 col on print */
+      #billto-grid { grid-template-columns: repeat(3,1fr) !important; gap:3px !important; }
 
-      #bottom-row { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 5px !important; }
-      #bottom-row .glass    { padding: 6px 8px !important; }
-      #bottom-row textarea  { font-size: 0.68rem !important; line-height: 1.3 !important; }
-      #bottom-row .fl input { font-size: 0.68rem !important; padding-top: 0.75rem !important; padding-bottom: 0.1rem !important; }
-      #bottom-row .fl label { font-size: 0.5rem !important; }
-      #bottom-row .space-y-1\.5 > * + * { margin-top: 2px !important; }
+      #card-items { padding:8px 10px !important; }
+      #card-items .col-header { font-size:0.6rem !important; }
+      /* force item rows to table layout on print */
+      .item-card { display:grid !important; grid-template-columns:5fr 1.5fr 2fr 2fr auto !important; gap:3px !important; align-items:center !important; padding:3px 5px !important; }
+      .item-desc { grid-column:1 !important; }
+      .item-qty  { grid-column:2 !important; }
+      .item-price{ grid-column:3 !important; }
+      .item-total{ grid-column:4 !important; }
+      .item-del  { display:none !important; }
+      .item-mobile-label { display:none !important; }
+      .item-card .inp { font-size:0.72rem !important; padding:3px 5px !important; border-radius:4px !important; }
+      .item-total-val { font-size:0.78rem !important; }
 
-      #card-status { padding: 4px 10px !important; }
-      #card-status .status-btn { padding: 1px 8px !important; font-size: 0.58rem !important; }
+      #card-items .totals-block { max-width:220px !important; }
+      #card-items .totals-block * { font-size:0.72rem !important; }
+      .grand-label { font-size:0.88rem !important; }
+      .grand-value { font-size:1.05rem !important; }
+      #card-items .my-4 { margin:4px 0 !important; }
+      #card-items .space-y-2 > * + * { margin-top:3px !important; }
+
+      #bottom-row { display:grid !important; grid-template-columns:1fr 1fr !important; gap:5px !important; }
+      #bottom-row .glass { padding:6px 8px !important; }
+      #bottom-row .inp-navy { font-size:0.68rem !important; padding:10px 10px 2px !important; }
+      #bottom-row .fl label { font-size:0.5rem !important; }
+      #bottom-row textarea { font-size:0.68rem !important; line-height:1.3 !important; }
+      #bottom-row .space-y-2 > * + * { margin-top:2px !important; }
+
+      #card-status { padding:4px 10px !important; }
+      #card-status .status-btn { padding:1px 8px !important; font-size:0.58rem !important; min-height:auto !important; }
     }
   </style>
 </head>
 
-<body class="min-h-screen p-4 sm:p-6">
+<body class="pb-28 sm:pb-8">
 
   <!-- bg blobs -->
-  <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+  <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10" aria-hidden="true">
     <div class="absolute -top-32 -left-24 w-96 h-96 rounded-full opacity-40 blur-3xl" style="background:#FFCEE3"></div>
     <div class="absolute top-1/3 -right-20 w-80 h-80 rounded-full opacity-20 blur-3xl" style="background:#FF85BB"></div>
-    <div class="absolute bottom-0 left-1/3 w-72 h-72 rounded-full opacity-15 blur-3xl" style="background:#021A54"></div>
+    <div class="absolute bottom-0 left-1/3 w-72 h-72 rounded-full opacity-10 blur-3xl" style="background:#021A54"></div>
   </div>
 
-  <div id="app" class="max-w-2xl mx-auto space-y-3">
+  <div id="app" class="max-w-2xl mx-auto px-3 pt-4 sm:px-6 sm:pt-6 space-y-3">
 
     <!-- ─── HEADER ─── -->
-    <div id="card-header" class="glass rounded-3xl p-5" style="box-shadow:0 4px 24px rgba(255,133,187,0.15)">
-      <div class="flex flex-col sm:flex-row sm:items-start gap-3">
+    <div id="card-header" class="glass rounded-3xl p-4 sm:p-5" style="box-shadow:0 4px 24px rgba(255,133,187,0.15)">
 
-        <!-- Logo upload -->
+      <!-- Row 1: Logo + Business info -->
+      <div class="flex gap-3 mb-3">
+        <!-- Logo -->
         <div class="flex-shrink-0">
-          <label for="logo-upload" class="cursor-pointer group block">
+          <label for="logo-upload" class="cursor-pointer block active:opacity-70 transition">
             <div id="logo-placeholder"
-                 class="logo-box w-16 h-16 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center transition group-hover:opacity-75"
+                 class="logo-box w-16 h-16 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center"
                  style="background:linear-gradient(135deg,#FFCEE3,#F5F5F5); border-color:#FF85BB; color:#FF85BB">
-              <i class="ph ph-image-square" style="font-size:1.6rem"></i>
-              <span class="text-xs font-medium mt-0.5">Logo</span>
+              <i class="ph ph-image-square" style="font-size:1.7rem"></i>
+              <span style="font-size:11px; font-weight:600; margin-top:2px">Logo</span>
             </div>
-            <img id="logo-preview" src="" alt="logo" class="logo-box hidden w-16 h-16 rounded-2xl object-contain border shadow-sm" style="border-color:#FFCEE3" />
+            <img id="logo-preview" src="" alt="logo"
+                 class="logo-box hidden w-16 h-16 rounded-2xl object-contain border shadow"
+                 style="border-color:#FFCEE3" />
           </label>
           <input id="logo-upload" type="file" accept="image/*" class="hidden" onchange="previewLogo(this)" />
         </div>
 
-        <!-- Business info -->
-        <div class="flex-1 space-y-1.5">
+        <!-- Business Name + Address -->
+        <div class="flex-1 space-y-2">
           <div class="fl">
-            <input id="biz-name" type="text" placeholder=" " class="inp w-full px-3 font-semibold text-sm" />
+            <input id="biz-name" type="text" placeholder=" " class="inp" style="font-weight:600" />
             <label><i class="ph ph-storefront"></i> Business Name</label>
           </div>
           <div class="fl">
-            <textarea id="biz-address" rows="2" placeholder=" " class="inp w-full px-3 pt-5 pb-1 text-xs resize-none leading-snug"></textarea>
+            <textarea id="biz-address" rows="2" placeholder=" " class="inp"></textarea>
             <label><i class="ph ph-map-pin"></i> Address · Email · Phone</label>
           </div>
         </div>
+      </div>
 
-        <!-- Invoice badge -->
-        <div class="sm:text-right space-y-1.5 flex-shrink-0">
-          <div class="flex sm:justify-end items-center gap-2">
+      <!-- Row 2: Invoice title + fields -->
+      <div class="flex items-start justify-between gap-3 pt-2 border-t" style="border-color:#FFCEE3">
+        <!-- Left: title + badge -->
+        <div>
+          <div class="flex items-center gap-2 mb-1">
             <i class="ph ph-receipt text-2xl" style="color:#FF85BB"></i>
-            <div class="serif text-3xl leading-none" style="color:#021A54">Invoice</div>
+            <span class="serif text-3xl leading-none" style="color:#021A54">Invoice</span>
           </div>
-          <div class="flex sm:justify-end">
-            <span id="status-badge"
-                  class="inline-flex items-center gap-1 px-3 py-0.5 rounded-full text-xs font-semibold text-white"
-                  style="background:#FF85BB">
-              <i class="ph ph-clock-countdown"></i> Unpaid
-            </span>
-          </div>
+          <span id="status-badge"
+                class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold text-white"
+                style="background:#FF85BB; min-height:28px">
+            <i class="ph ph-clock-countdown"></i> Unpaid
+          </span>
+        </div>
+
+        <!-- Right: invoice # + dates -->
+        <div class="space-y-2" style="min-width:140px">
           <div class="fl">
-            <input id="inv-num" type="text" placeholder=" " value="#001" class="inp-navy w-32 text-right px-3 text-xs" />
+            <input id="inv-num" type="text" placeholder=" " value="#001"
+                   class="inp-navy inp-sm text-right" style="width:100%" />
             <label class="right-3 left-auto"><i class="ph ph-hash"></i> Invoice #</label>
           </div>
           <div class="fl">
-            <input id="inv-date" type="date" class="inp-navy w-32 text-right px-3 text-xs" />
+            <input id="inv-date" type="date" class="inp-navy inp-sm text-right" style="width:100%" />
             <label class="right-3 left-auto"><i class="ph ph-calendar-blank"></i> Date</label>
           </div>
           <div class="fl">
-            <input id="inv-due" type="date" class="inp-navy w-32 text-right px-3 text-xs" />
+            <input id="inv-due" type="date" class="inp-navy inp-sm text-right" style="width:100%" />
             <label class="right-3 left-auto"><i class="ph ph-calendar-check"></i> Due Date</label>
           </div>
         </div>
@@ -233,89 +292,83 @@
     </div>
 
     <!-- ─── BILL TO ─── -->
-    <div id="card-billto" class="glass rounded-3xl p-4" style="box-shadow:0 4px 20px rgba(2,26,84,0.07)">
+    <div id="card-billto" class="glass rounded-3xl p-4 sm:p-5" style="box-shadow:0 4px 20px rgba(2,26,84,0.07)">
       <div class="sec-label" style="background:#e8ecf5; color:#021A54">
         <i class="ph ph-user-circle"></i> Bill To
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-        <div class="fl">
-          <input id="client-name" type="text" placeholder=" " class="inp-navy w-full px-3 font-medium text-sm" />
+      <div id="billto-grid" class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+        <div class="fl sm:col-span-1">
+          <input id="client-name" type="text" placeholder=" " class="inp-navy" />
           <label><i class="ph ph-user"></i> Client Name</label>
         </div>
-        <div class="fl">
-          <input id="client-email" type="email" placeholder=" " class="inp-navy w-full px-3 text-xs" />
+        <div class="fl sm:col-span-1">
+          <input id="client-email" type="email" placeholder=" " class="inp-navy" />
           <label><i class="ph ph-envelope"></i> Email Address</label>
         </div>
-        <div class="fl">
-          <input id="client-address" type="text" placeholder=" " class="inp-navy w-full px-3 text-xs" />
+        <div class="fl sm:col-span-1">
+          <input id="client-address" type="text" placeholder=" " class="inp-navy" />
           <label><i class="ph ph-map-pin-area"></i> Address · City</label>
         </div>
       </div>
     </div>
 
     <!-- ─── ITEMS ─── -->
-    <div id="card-items" class="glass rounded-3xl p-5" style="box-shadow:0 4px 24px rgba(255,133,187,0.12)">
+    <div id="card-items" class="glass rounded-3xl p-4 sm:p-5" style="box-shadow:0 4px 24px rgba(255,133,187,0.12)">
       <div class="sec-label" style="background:#fff0f7; color:#FF85BB">
         <i class="ph ph-list-checks"></i> Items
       </div>
 
-      <!-- Column headers -->
-      <div class="hidden sm:grid grid-cols-12 gap-2 mb-2 px-2">
-        <div class="col-header col-span-5 text-xs font-semibold uppercase tracking-wider flex items-center gap-1" style="color:#021A54; opacity:.45">
-          <i class="ph ph-tag"></i> Description
-        </div>
-        <div class="col-header col-span-2 text-xs font-semibold uppercase tracking-wider text-center" style="color:#021A54; opacity:.45">Qty</div>
-        <div class="col-header col-span-2 text-xs font-semibold uppercase tracking-wider text-right" style="color:#021A54; opacity:.45">Unit Price</div>
-        <div class="col-header col-span-2 text-xs font-semibold uppercase tracking-wider text-right flex items-center justify-end gap-1" style="color:#021A54; opacity:.45">
-          <i class="ph ph-coins"></i> Total
-        </div>
+      <!-- Desktop table header (hidden on mobile) -->
+      <div class="hidden sm:grid grid-cols-12 gap-2 mb-2 px-1">
+        <div class="col-header col-span-5 text-xs font-semibold uppercase tracking-wider flex items-center gap-1" style="color:#021A54;opacity:.45"><i class="ph ph-tag"></i> Description</div>
+        <div class="col-header col-span-2 text-xs font-semibold uppercase tracking-wider text-center" style="color:#021A54;opacity:.45">Qty</div>
+        <div class="col-header col-span-2 text-xs font-semibold uppercase tracking-wider text-right" style="color:#021A54;opacity:.45">Unit Price</div>
+        <div class="col-header col-span-2 text-xs font-semibold uppercase tracking-wider text-right flex items-center justify-end gap-1" style="color:#021A54;opacity:.45"><i class="ph ph-coins"></i> Total</div>
         <div class="col-span-1"></div>
       </div>
 
+      <!-- Item rows -->
       <div id="item-rows" class="space-y-2"></div>
 
-      <!-- Add item -->
+      <!-- Add item button -->
       <button onclick="addRow()"
-              class="no-print mt-3 flex items-center gap-1.5 text-sm font-medium transition group"
-              style="color:#FF85BB">
-        <span class="w-7 h-7 rounded-full flex items-center justify-center transition group-hover:scale-110"
-              style="background:#FFCEE3">
-          <i class="ph ph-plus-circle" style="font-size:1.1rem"></i>
+              class="no-print mt-3 flex items-center gap-2 font-medium transition active:scale-95"
+              style="color:#FF85BB; font-size:15px; min-height:44px">
+        <span class="w-8 h-8 rounded-full flex items-center justify-center" style="background:#FFCEE3">
+          <i class="ph ph-plus-circle" style="font-size:1.2rem"></i>
         </span>
         Add Item
       </button>
 
       <!-- Divider -->
-      <div class="my-3 border-t border-dashed" style="border-color:#FFCEE3"></div>
+      <div class="my-4 border-t border-dashed" style="border-color:#FFCEE3"></div>
 
       <!-- Totals -->
-      <div class="totals-block max-w-xs ml-auto space-y-1.5">
-        <div class="flex justify-between text-sm items-center" style="color:#021A54; opacity:.7">
-          <span class="flex items-center gap-1"><i class="ph ph-sigma text-base"></i> Subtotal</span>
-          <span id="subtotal">0 MMK</span>
+      <div class="totals-block ml-auto space-y-2" style="max-width:280px">
+        <div class="flex justify-between items-center" style="color:#021A54; opacity:.75">
+          <span class="flex items-center gap-1 text-sm"><i class="ph ph-sigma"></i> Subtotal</span>
+          <span id="subtotal" class="text-sm font-medium">0 MMK</span>
         </div>
-        <div class="flex items-center justify-between text-sm" style="color:#021A54; opacity:.7">
+        <div class="flex items-center justify-between" style="color:#021A54; opacity:.75">
           <div class="flex items-center gap-2">
-            <span class="flex items-center gap-1"><i class="ph ph-percent text-base"></i> Tax</span>
+            <span class="text-sm flex items-center gap-1"><i class="ph ph-percent"></i> Tax</span>
             <input id="tax-rate" type="number" value="0" min="0" max="100" oninput="calcTotals()"
-                   class="w-12 rounded-lg px-1.5 py-0.5 text-center text-xs focus:outline-none transition"
-                   style="background:#F5F5F5; border:1.5px solid #FFCEE3" />
-            <span class="text-xs opacity-60">%</span>
+                   class="calc-input w-14" />
+            <span style="font-size:12px; opacity:.6">%</span>
           </div>
-          <span id="tax-amount">0 MMK</span>
+          <span id="tax-amount" class="text-sm">0 MMK</span>
         </div>
-        <div class="flex items-center justify-between text-sm" style="color:#021A54; opacity:.7">
+        <div class="flex items-center justify-between" style="color:#021A54; opacity:.75">
           <div class="flex items-center gap-2">
-            <span class="flex items-center gap-1"><i class="ph ph-ticket text-base"></i> Discount</span>
+            <span class="text-sm flex items-center gap-1"><i class="ph ph-ticket"></i> Discount</span>
             <input id="discount" type="number" value="0" min="0" oninput="calcTotals()"
-                   class="w-20 rounded-lg px-1.5 py-0.5 text-center text-xs focus:outline-none transition"
-                   style="background:#F5F5F5; border:1.5px solid #FFCEE3" />
-            <span class="text-xs opacity-60">MMK</span>
+                   class="calc-input w-20" />
+            <span style="font-size:12px; opacity:.6">MMK</span>
           </div>
-          <span id="discount-amount" style="color:#FF85BB">-0 MMK</span>
+          <span id="discount-amount" class="text-sm" style="color:#FF85BB">-0 MMK</span>
         </div>
-        <div class="pt-2 border-t flex items-center justify-between" style="border-color:#FFCEE3">
-          <span class="grand-label serif text-lg flex items-center gap-1.5" style="color:#021A54">
+        <div class="pt-3 border-t flex items-center justify-between" style="border-color:#FFCEE3">
+          <span class="grand-label serif text-lg flex items-center gap-2" style="color:#021A54">
             <i class="ph ph-wallet text-xl" style="color:#FF85BB"></i> Grand Total
           </span>
           <span id="grand-total" class="grand-value serif text-2xl font-medium" style="color:#FF85BB">0 MMK</span>
@@ -330,70 +383,114 @@
           <i class="ph ph-note-pencil"></i> Notes
         </div>
         <textarea id="notes" rows="3" placeholder="Thank you for your business! 🌸"
-                  class="w-full rounded-xl px-3 py-2 text-xs resize-none focus:outline-none transition leading-snug"
-                  style="background:rgba(245,245,245,0.6); border:1.5px solid #FFCEE3; color:#021A54"></textarea>
+                  class="w-full rounded-2xl px-4 py-3 resize-none focus:outline-none transition leading-snug"
+                  style="background:rgba(245,245,245,0.6); border:1.5px solid #FFCEE3; color:#021A54; font-size:16px !important"></textarea>
       </div>
       <div class="glass rounded-3xl p-4" style="box-shadow:0 4px 16px rgba(2,26,84,0.06)">
         <div class="sec-label" style="background:#e8ecf5; color:#021A54">
           <i class="ph ph-bank"></i> Payment Details
         </div>
-        <div class="space-y-1.5">
+        <div class="space-y-2">
           <div class="fl">
-            <input id="bank-name" type="text" placeholder=" " class="inp-navy w-full px-3 text-xs" />
+            <input id="bank-name" type="text" placeholder=" " class="inp-navy" />
             <label><i class="ph ph-buildings"></i> Bank Name</label>
           </div>
           <div class="fl">
-            <input id="account-num" type="text" placeholder=" " class="inp-navy w-full px-3 text-xs" />
+            <input id="account-num" type="text" placeholder=" " class="inp-navy" />
             <label><i class="ph ph-credit-card"></i> Account Number</label>
           </div>
           <div class="fl">
-            <input id="routing-num" type="text" placeholder=" " class="inp-navy w-full px-3 text-xs" />
+            <input id="routing-num" type="text" placeholder=" " class="inp-navy" />
             <label><i class="ph ph-arrows-left-right"></i> Routing / SWIFT</label>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ─── STATUS + ACTIONS ─── -->
-    <div id="card-status" class="glass rounded-3xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3"
+    <!-- ─── STATUS (desktop visible here; on mobile in sticky bar) ─── -->
+    <div id="card-status" class="glass rounded-3xl p-4 sm:flex items-center justify-between gap-3 hidden sm:flex"
          style="box-shadow:0 4px 20px rgba(255,133,187,0.12)">
-      <div class="flex items-center gap-2">
-        <span class="text-xs font-semibold uppercase tracking-widest flex items-center gap-1" style="color:#021A54; opacity:.45">
+      <div class="flex items-center gap-2 flex-wrap">
+        <span class="text-xs font-semibold uppercase tracking-widest flex items-center gap-1" style="color:#021A54;opacity:.45">
           <i class="ph ph-flag"></i> Status
         </span>
         <div class="flex gap-1.5">
-          <button onclick="setStatus('unpaid')"  id="status-unpaid"  class="status-btn px-3 py-1 rounded-full text-xs font-semibold border transition flex items-center gap-1">
-            <i class="ph ph-clock-countdown"></i> Unpaid
-          </button>
-          <button onclick="setStatus('paid')"    id="status-paid"    class="status-btn px-3 py-1 rounded-full text-xs font-semibold border transition flex items-center gap-1">
-            <i class="ph ph-check-circle"></i> Paid
-          </button>
-          <button onclick="setStatus('overdue')" id="status-overdue" class="status-btn px-3 py-1 rounded-full text-xs font-semibold border transition flex items-center gap-1">
-            <i class="ph ph-warning-circle"></i> Overdue
-          </button>
+          <button onclick="setStatus('unpaid')"  id="status-unpaid"  class="status-btn px-3 rounded-full text-xs font-semibold border transition flex items-center gap-1"><i class="ph ph-clock-countdown"></i> Unpaid</button>
+          <button onclick="setStatus('paid')"    id="status-paid"    class="status-btn px-3 rounded-full text-xs font-semibold border transition flex items-center gap-1"><i class="ph ph-check-circle"></i> Paid</button>
+          <button onclick="setStatus('overdue')" id="status-overdue" class="status-btn px-3 rounded-full text-xs font-semibold border transition flex items-center gap-1"><i class="ph ph-warning-circle"></i> Overdue</button>
         </div>
       </div>
       <div class="no-print flex gap-2">
-        <button onclick="clearAll()"
-                class="px-3 py-1.5 rounded-2xl text-xs font-medium transition flex items-center gap-1.5"
-                style="background:#F5F5F5; color:#021A54">
-          <i class="ph ph-arrow-counter-clockwise"></i> Clear
-        </button>
-        <button onclick="window.print()"
-                class="px-4 py-1.5 rounded-2xl text-white text-xs font-semibold transition flex items-center gap-1.5"
-                style="background:linear-gradient(135deg,#FF85BB,#e0609a); box-shadow:0 4px 14px rgba(255,133,187,0.4)">
-          <i class="ph ph-printer text-sm"></i> Print / PDF
-        </button>
+        <button onclick="clearAll()" class="px-4 rounded-2xl text-sm font-medium transition flex items-center gap-1.5" style="background:#F5F5F5; color:#021A54"><i class="ph ph-arrow-counter-clockwise"></i> Clear</button>
+        <button onclick="window.print()" class="px-5 rounded-2xl text-white text-sm font-semibold transition flex items-center gap-2" style="background:linear-gradient(135deg,#FF85BB,#e0609a); box-shadow:0 4px 14px rgba(255,133,187,0.4)"><i class="ph ph-printer"></i> Print / PDF</button>
       </div>
     </div>
 
-    <footer class="text-center text-xs pb-2 flex items-center justify-center gap-1" style="color:#FF85BB; opacity:.6">
+    <footer class="text-center text-xs pb-2 flex items-center justify-center gap-1 hidden sm:flex" style="color:#FF85BB; opacity:.6">
       <i class="ph ph-heart-straight"></i> Made with love · Invoice Maker
     </footer>
+
+  </div><!-- /app -->
+
+  <!-- ─── STICKY BOTTOM BAR (mobile only) ─── -->
+  <div class="sticky-bar sm:hidden no-print">
+    <!-- Status row -->
+    <div class="flex items-center gap-2 mb-2 overflow-x-auto pb-1" style="scrollbar-width:none">
+      <span class="text-xs font-bold uppercase tracking-widest flex-shrink-0 flex items-center gap-1" style="color:#021A54;opacity:.45">
+        <i class="ph ph-flag"></i>
+      </span>
+      <button onclick="setStatus('unpaid')"  id="mob-status-unpaid"  class="mob-status flex-shrink-0 px-3 rounded-full text-xs font-semibold border transition flex items-center gap-1"><i class="ph ph-clock-countdown"></i> Unpaid</button>
+      <button onclick="setStatus('paid')"    id="mob-status-paid"    class="mob-status flex-shrink-0 px-3 rounded-full text-xs font-semibold border transition flex items-center gap-1"><i class="ph ph-check-circle"></i> Paid</button>
+      <button onclick="setStatus('overdue')" id="mob-status-overdue" class="mob-status flex-shrink-0 px-3 rounded-full text-xs font-semibold border transition flex items-center gap-1"><i class="ph ph-warning-circle"></i> Overdue</button>
+    </div>
+    <!-- Action buttons -->
+    <div class="flex gap-2">
+      <button onclick="clearAll()"
+              class="flex-1 rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 transition active:scale-95"
+              style="background:#F5F5F5; color:#021A54; min-height:48px">
+        <i class="ph ph-arrow-counter-clockwise text-lg"></i> Clear
+      </button>
+      <button onclick="window.print()"
+              class="flex-[2] rounded-2xl text-white text-sm font-bold flex items-center justify-center gap-2 transition active:scale-95"
+              style="background:linear-gradient(135deg,#FF85BB,#e0609a); box-shadow:0 4px 16px rgba(255,133,187,0.4); min-height:48px">
+        <i class="ph ph-printer text-lg"></i> Print / Save PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- PWA install banner -->
+  <div id="pwa-banner" class="hidden fixed bottom-24 sm:bottom-5 left-1/2 -translate-x-1/2 z-50 no-print" style="width:min(92vw,440px)">
+    <div class="glass rounded-3xl px-4 py-3 flex items-center gap-3" style="box-shadow:0 8px 32px rgba(255,133,187,0.28);border:1.5px solid #FFCEE3">
+      <img src="icon.svg" class="w-10 h-10 rounded-xl flex-shrink-0" alt="icon" />
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-semibold" style="color:#021A54">Install Invoice Maker</p>
+        <p class="text-xs" style="color:#021A54;opacity:.55">Add to home screen · works offline 🌸</p>
+      </div>
+      <div class="flex gap-2 flex-shrink-0">
+        <button id="pwa-dismiss" class="px-3 rounded-2xl text-xs font-medium" style="background:#F5F5F5;color:#021A54;min-height:36px">Later</button>
+        <button id="pwa-install" class="px-3 rounded-2xl text-xs font-semibold text-white flex items-center gap-1" style="background:linear-gradient(135deg,#FF85BB,#e0609a);min-height:36px">
+          <i class="ph ph-download-simple"></i> Install
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Offline toast -->
+  <div id="offline-toast" class="hidden fixed top-5 left-1/2 -translate-x-1/2 z-50 no-print">
+    <div class="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-white" style="background:#021A54;box-shadow:0 4px 16px rgba(2,26,84,0.3)">
+      <i class="ph ph-wifi-slash"></i> You're offline — app still works!
+    </div>
+  </div>
+
+  <!-- Online toast -->
+  <div id="online-toast" class="hidden fixed top-5 left-1/2 -translate-x-1/2 z-50 no-print">
+    <div class="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-white" style="background:#10b98a;box-shadow:0 4px 16px rgba(16,185,138,0.3)">
+      <i class="ph ph-wifi-high"></i> Back online!
+    </div>
   </div>
 
 <script>
-  /* Logo */
+  /* ── Logo ── */
   function previewLogo(input) {
     if (!input.files?.[0]) return;
     const r = new FileReader();
@@ -406,56 +503,78 @@
     r.readAsDataURL(input.files[0]);
   }
 
-  /* Currency */
+  /* ── Currency ── */
   const fmt   = n => Math.max(0, n).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' MMK';
-  const parse = s => parseFloat(String(s).replace(/[, MMK]/g, '')) || 0;
+  const parse = s => parseFloat(String(s).replace(/[,\s]/g, '').replace('MMK','')) || 0;
 
-  /* Rows */
+  /* ── Item Rows ── */
   let rowCount = 0;
+
   function addRow(desc = '', qty = 1, price = 0) {
     rowCount++;
-    const id = `row-${rowCount}`;
+    const id  = `row-${rowCount}`;
     const div = document.createElement('div');
     div.id = id;
-    div.className = 'row-enter grid grid-cols-12 gap-2 items-center rounded-xl px-2 py-2';
-    div.style.background = 'rgba(255,206,227,0.18)';
+    div.className = 'row-enter item-card';
+
     div.innerHTML = `
-      <div class="col-span-12 sm:hidden text-xs font-semibold uppercase tracking-wider px-1 flex items-center gap-1" style="color:#021A54; opacity:.5">
-        <i class="ph ph-package"></i> Item ${rowCount}
+      <!-- Mobile label -->
+      <div class="item-mobile-label flex items-center justify-between mb-2 sm:hidden">
+        <span class="text-xs font-bold uppercase tracking-wider flex items-center gap-1" style="color:#021A54;opacity:.45">
+          <i class="ph ph-package"></i> Item ${rowCount}
+        </span>
+        <button onclick="removeRow('${id}')" class="item-del btn-icon rounded-xl active:scale-90 transition" style="color:#FFCEE3;min-height:36px;min-width:36px" onmouseover="this.style.color='#FF85BB'" onmouseout="this.style.color='#FFCEE3'">
+          <i class="ph ph-trash text-xl"></i>
+        </button>
       </div>
 
-      <input type="text" placeholder="Item description…" value="${esc(desc)}"
-             class="col-span-12 sm:col-span-5 rounded-lg px-3 py-2 text-sm focus:outline-none transition"
-             style="background:white; border:1.5px solid #FFCEE3; color:#021A54"
-             oninput="calcTotals()" />
-
-      <div class="col-span-4 sm:col-span-2 flex flex-col items-center gap-0.5">
-        <span class="sm:hidden text-xs flex items-center gap-0.5" style="color:#021A54; opacity:.5"><i class="ph ph-hash"></i>Qty</span>
+      <!-- Desktop layout: table grid -->
+      <div class="hidden sm:grid grid-cols-12 gap-2 items-center">
+        <input type="text" placeholder="Item description…" value="${esc(desc)}"
+               class="item-desc col-span-5 rounded-xl px-3 py-2 focus:outline-none transition"
+               style="background:white;border:1.5px solid #FFCEE3;color:#021A54;font-size:16px !important"
+               oninput="calcTotals()" />
         <input type="number" value="${qty}" min="0" id="${id}-qty"
-               class="w-full rounded-lg px-2 py-2 text-sm text-center focus:outline-none transition"
-               style="background:white; border:1.5px solid #FFCEE3; color:#021A54"
-               oninput="calcRow('${id}'); calcTotals()" />
+               class="item-qty col-span-2 rounded-xl px-2 py-2 text-center focus:outline-none transition"
+               style="background:white;border:1.5px solid #FFCEE3;color:#021A54;font-size:16px !important"
+               oninput="calcRow('${id}');calcTotals()" />
+        <input type="number" value="${price}" min="0" step="1" id="${id}-price-d"
+               class="item-price col-span-2 rounded-xl px-2 py-2 text-right focus:outline-none transition"
+               style="background:white;border:1.5px solid #FFCEE3;color:#021A54;font-size:16px !important"
+               oninput="syncPrice('${id}','d');calcRow('${id}');calcTotals()" />
+        <span id="${id}-total" class="item-total-val col-span-2 text-sm font-semibold text-right pr-1" style="color:#FF85BB">0 MMK</span>
+        <button onclick="removeRow('${id}')" class="item-del col-span-1 btn-icon rounded-xl transition" style="color:#FFCEE3" onmouseover="this.style.color='#FF85BB'" onmouseout="this.style.color='#FFCEE3'">
+          <i class="ph ph-x-circle text-xl"></i>
+        </button>
       </div>
 
-      <div class="col-span-4 sm:col-span-2 flex flex-col items-center gap-0.5">
-        <span class="sm:hidden text-xs flex items-center gap-0.5" style="color:#021A54; opacity:.5"><i class="ph ph-currency-circle-dollar"></i>Price</span>
-        <input type="number" value="${price}" min="0" step="1" id="${id}-price"
-               class="w-full rounded-lg px-2 py-2 text-sm text-right focus:outline-none transition"
-               style="background:white; border:1.5px solid #FFCEE3; color:#021A54"
-               oninput="calcRow('${id}'); calcTotals()" />
+      <!-- Mobile layout: card style -->
+      <div class="sm:hidden space-y-2">
+        <input type="text" placeholder="Item description…" value="${esc(desc)}"
+               class="item-desc w-full rounded-xl px-4 py-3 focus:outline-none transition"
+               style="background:white;border:1.5px solid #FFCEE3;color:#021A54;font-size:16px !important"
+               oninput="calcTotals()" />
+        <div class="flex gap-2">
+          <div class="flex flex-col gap-1 w-24">
+            <label class="text-xs font-semibold flex items-center gap-1" style="color:#021A54;opacity:.5"><i class="ph ph-hash"></i> Qty</label>
+            <input type="number" value="${qty}" min="0" id="${id}-qty-m"
+                   class="item-qty w-full rounded-xl px-3 py-2.5 text-center focus:outline-none transition"
+                   style="background:white;border:1.5px solid #FFCEE3;color:#021A54;font-size:16px !important"
+                   oninput="syncQty('${id}');calcRow('${id}');calcTotals()" />
+          </div>
+          <div class="flex flex-col gap-1 flex-1">
+            <label class="text-xs font-semibold flex items-center gap-1" style="color:#021A54;opacity:.5"><i class="ph ph-currency-circle-dollar"></i> Unit Price</label>
+            <input type="number" value="${price}" min="0" step="1" id="${id}-price-m"
+                   class="item-price w-full rounded-xl px-3 py-2.5 text-right focus:outline-none transition"
+                   style="background:white;border:1.5px solid #FFCEE3;color:#021A54;font-size:16px !important"
+                   oninput="syncPrice('${id}','m');calcRow('${id}');calcTotals()" />
+          </div>
+        </div>
+        <div class="flex items-center justify-between px-1">
+          <span class="text-xs flex items-center gap-1" style="color:#021A54;opacity:.45"><i class="ph ph-equals"></i> Line Total</span>
+          <span id="${id}-total-m" class="text-base font-bold" style="color:#FF85BB">0 MMK</span>
+        </div>
       </div>
-
-      <div class="col-span-3 sm:col-span-2 flex flex-col items-center gap-0.5">
-        <span class="sm:hidden text-xs flex items-center gap-0.5" style="color:#021A54; opacity:.5"><i class="ph ph-equals"></i>Total</span>
-        <span id="${id}-total" class="row-total text-sm font-semibold text-right w-full pr-1" style="color:#FF85BB">0 MMK</span>
-      </div>
-
-      <button onclick="removeRow('${id}')"
-              class="no-print col-span-1 flex items-center justify-center transition rounded-lg py-2 group"
-              style="color:#FFCEE3">
-        <i class="ph ph-x-circle text-lg group-hover:text-pink-DEFAULT transition" style="transition:color .15s"
-           onmouseover="this.style.color='#FF85BB'" onmouseout="this.style.color='#FFCEE3'"></i>
-      </button>
     `;
     document.getElementById('item-rows').appendChild(div);
     calcRow(id);
@@ -464,23 +583,41 @@
 
   function esc(s) { return String(s).replace(/"/g, '&quot;'); }
 
+  function syncQty(id) {
+    const m = document.getElementById(`${id}-qty-m`);
+    const d = document.getElementById(`${id}-qty`);
+    if (m && d) d.value = m.value;
+  }
+  function syncPrice(id, src) {
+    const m = document.getElementById(`${id}-price-m`);
+    const d = document.getElementById(`${id}-price-d`);
+    if (src === 'm' && m && d) d.value = m.value;
+    if (src === 'd' && m && d) m.value = d.value;
+  }
+
   function removeRow(id) {
     const el = document.getElementById(id);
     if (!el) return;
-    el.style.cssText += ';opacity:0;transform:translateY(-5px);transition:all .18s';
+    el.style.cssText += ';opacity:0;transform:translateY(-6px);transition:all .18s';
     setTimeout(() => { el.remove(); calcTotals(); }, 190);
   }
 
   function calcRow(id) {
-    const qty   = parseFloat(document.getElementById(`${id}-qty`)?.value)   || 0;
-    const price = parseFloat(document.getElementById(`${id}-price`)?.value) || 0;
-    const el    = document.getElementById(`${id}-total`);
-    if (el) el.textContent = fmt(qty * price);
+    const qty   = parseFloat(document.getElementById(`${id}-qty-m`)?.value ?? document.getElementById(`${id}-qty`)?.value)   || 0;
+    const price = parseFloat(document.getElementById(`${id}-price-m`)?.value ?? document.getElementById(`${id}-price-d`)?.value) || 0;
+    const val   = fmt(qty * price);
+    const d = document.getElementById(`${id}-total`);
+    const m = document.getElementById(`${id}-total-m`);
+    if (d) d.textContent = val;
+    if (m) m.textContent = val;
   }
 
   function calcTotals() {
     let sub = 0;
-    document.querySelectorAll('[id$="-total"]').forEach(el => { sub += parse(el.textContent); });
+    // sum desktop totals (avoiding double-count with mobile mirrors)
+    document.querySelectorAll('[id$="-total"]:not([id$="-total-m"])').forEach(el => {
+      sub += parse(el.textContent);
+    });
     const taxRate  = parseFloat(document.getElementById('tax-rate').value) || 0;
     const discount = parseFloat(document.getElementById('discount').value)  || 0;
     const tax   = sub * taxRate / 100;
@@ -491,20 +628,24 @@
     document.getElementById('grand-total').textContent     = fmt(grand);
   }
 
-  /* Status */
+  /* ── Status ── */
   const SS = {
-    unpaid:  { style:`background:#fff0f7; color:#FF85BB; border-color:#FFCEE3`,  activeStyle:`background:#FF85BB; color:white; border-color:#FF85BB`,  icon:'ph-clock-countdown', label:'Unpaid',  badge:'#FF85BB' },
-    paid:    { style:`background:#e8ecf5; color:#021A54; border-color:#d0d8ef`,  activeStyle:`background:#021A54; color:white; border-color:#021A54`,  icon:'ph-check-circle',    label:'Paid',    badge:'#021A54' },
-    overdue: { style:`background:#fff0f7; color:#e0609a; border-color:#FFCEE3`,  activeStyle:`background:#e0609a; color:white; border-color:#e0609a`,  icon:'ph-warning-circle',  label:'Overdue', badge:'#e0609a' },
+    unpaid:  { style:'background:#fff0f7;color:#FF85BB;border-color:#FFCEE3',    active:'background:#FF85BB;color:white;border-color:#FF85BB',    icon:'ph-clock-countdown', label:'Unpaid',  badge:'#FF85BB' },
+    paid:    { style:'background:#e8ecf5;color:#021A54;border-color:#d0d8ef',    active:'background:#021A54;color:white;border-color:#021A54',    icon:'ph-check-circle',    label:'Paid',    badge:'#021A54' },
+    overdue: { style:'background:#fff0f7;color:#e0609a;border-color:#FFCEE3',    active:'background:#e0609a;color:white;border-color:#e0609a',    icon:'ph-warning-circle',  label:'Overdue', badge:'#e0609a' },
   };
   let cur = null;
 
   function setStatus(s) {
     if (cur === s) { resetStatus(); return; }
     resetStatus(); cur = s;
-    const btn = document.getElementById(`status-${s}`);
-    btn.setAttribute('style', SS[s].activeStyle);
-    btn.className = 'status-btn px-3 py-1 rounded-full text-xs font-semibold border transition flex items-center gap-1';
+    ['status-', 'mob-status-'].forEach(prefix => {
+      const btn = document.getElementById(prefix + s);
+      if (btn) {
+        btn.setAttribute('style', SS[s].active);
+        btn.className = btn.className; // keep classes
+      }
+    });
     const badge = document.getElementById('status-badge');
     badge.style.background = SS[s].badge;
     badge.innerHTML = `<i class="ph ${SS[s].icon}"></i> ${SS[s].label}`;
@@ -512,20 +653,23 @@
 
   function resetStatus() {
     Object.keys(SS).forEach(s => {
-      const btn = document.getElementById(`status-${s}`);
-      btn.setAttribute('style', SS[s].style);
-      btn.className = 'status-btn px-3 py-1 rounded-full text-xs font-semibold border transition flex items-center gap-1';
+      ['status-', 'mob-status-'].forEach(prefix => {
+        const btn = document.getElementById(prefix + s);
+        if (btn) btn.setAttribute('style', SS[s].style);
+      });
     });
     document.getElementById('status-badge').style.background = '#FF85BB';
     document.getElementById('status-badge').innerHTML = '<i class="ph ph-clock-countdown"></i> Unpaid';
     cur = null;
   }
 
-  /* Clear */
+  /* ── Clear ── */
   function clearAll() {
     if (!confirm('Clear all invoice data?')) return;
-    ['biz-name','biz-address','client-name','client-email','client-address','notes','bank-name','account-num','routing-num']
-      .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    ['biz-name','biz-address','client-name','client-email','client-address',
+     'notes','bank-name','account-num','routing-num'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.value = '';
+    });
     document.getElementById('inv-num').value  = '#001';
     document.getElementById('tax-rate').value = '0';
     document.getElementById('discount').value = '0';
@@ -533,15 +677,14 @@
     document.getElementById('inv-due').value  = '';
     document.getElementById('item-rows').innerHTML = '';
     rowCount = 0;
-    resetStatus();
-    calcTotals();
+    resetStatus(); calcTotals();
     document.getElementById('logo-placeholder').classList.remove('hidden');
     const lp = document.getElementById('logo-preview');
     lp.classList.add('hidden'); lp.src = '';
     addRow('', 1, 0);
   }
 
-  /* Init */
+  /* ── Init ── */
   (function () {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('inv-date').value = today;
@@ -552,102 +695,43 @@
     addRow('Illustration Pack', 3,  150000);
     addRow('Revisions',         2,   75000);
   })();
-</script>
 
-<!-- ─── PWA: Install banner + Service Worker ─── -->
-
-<!-- Install prompt banner (hidden until browser fires beforeinstallprompt) -->
-<div id="pwa-banner"
-     class="hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-50 no-print"
-     style="width: min(92vw, 440px)">
-  <div class="glass rounded-3xl px-5 py-3 flex items-center gap-3"
-       style="box-shadow:0 8px 32px rgba(255,133,187,0.25); border:1.5px solid #FFCEE3">
-    <img src="icon.svg" class="w-10 h-10 rounded-xl flex-shrink-0" alt="icon" />
-    <div class="flex-1 min-w-0">
-      <p class="text-sm font-semibold" style="color:#021A54">Install Invoice Maker</p>
-      <p class="text-xs" style="color:#021A54; opacity:.55">Add to home screen · works offline 🌸</p>
-    </div>
-    <div class="flex gap-2 flex-shrink-0">
-      <button id="pwa-dismiss"
-              class="px-3 py-1.5 rounded-2xl text-xs font-medium"
-              style="background:#F5F5F5; color:#021A54">Later</button>
-      <button id="pwa-install"
-              class="px-3 py-1.5 rounded-2xl text-xs font-semibold text-white flex items-center gap-1"
-              style="background:linear-gradient(135deg,#FF85BB,#e0609a); box-shadow:0 4px 12px rgba(255,133,187,0.35)">
-        <i class="ph ph-download-simple"></i> Install
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- Offline toast -->
-<div id="offline-toast"
-     class="hidden fixed top-5 left-1/2 -translate-x-1/2 z-50 no-print">
-  <div class="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold text-white"
-       style="background:#021A54; box-shadow:0 4px 16px rgba(2,26,84,0.3)">
-    <i class="ph ph-wifi-slash"></i> You're offline — app still works!
-  </div>
-</div>
-
-<!-- Online restored toast -->
-<div id="online-toast"
-     class="hidden fixed top-5 left-1/2 -translate-x-1/2 z-50 no-print">
-  <div class="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold text-white"
-       style="background:#10b98a; box-shadow:0 4px 16px rgba(16,185,138,0.3)">
-    <i class="ph ph-wifi-high"></i> Back online!
-  </div>
-</div>
-
-<script>
   /* ── Service Worker ── */
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js')
-        .then(reg => console.log('[SW] Registered:', reg.scope))
-        .catch(err => console.warn('[SW] Registration failed:', err));
+        .then(r => console.log('[SW] registered', r.scope))
+        .catch(e => console.warn('[SW] failed', e));
     });
   }
 
-  /* ── Install Prompt ── */
+  /* ── PWA Install Prompt ── */
   let deferredPrompt = null;
-  const banner   = document.getElementById('pwa-banner');
-  const btnInst  = document.getElementById('pwa-install');
-  const btnDism  = document.getElementById('pwa-dismiss');
+  const banner  = document.getElementById('pwa-banner');
+  const btnInst = document.getElementById('pwa-install');
+  const btnDism = document.getElementById('pwa-dismiss');
 
   window.addEventListener('beforeinstallprompt', e => {
-    e.preventDefault();
-    deferredPrompt = e;
-    // Show banner after 2 s so user settles in first
-    setTimeout(() => banner.classList.remove('hidden'), 2000);
+    e.preventDefault(); deferredPrompt = e;
+    setTimeout(() => banner.classList.remove('hidden'), 2500);
   });
-
   btnInst?.addEventListener('click', async () => {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    deferredPrompt = null;
-    banner.classList.add('hidden');
-    console.log('[PWA] Install outcome:', outcome);
+    deferredPrompt = null; banner.classList.add('hidden');
   });
-
   btnDism?.addEventListener('click', () => banner.classList.add('hidden'));
-
-  // Hide banner once installed
-  window.addEventListener('appinstalled', () => {
-    banner.classList.add('hidden');
-    deferredPrompt = null;
-    console.log('[PWA] Installed successfully!');
-  });
+  window.addEventListener('appinstalled', () => { banner.classList.add('hidden'); deferredPrompt = null; });
 
   /* ── Offline / Online toasts ── */
-  function showToast(id, duration = 3000) {
+  const showToast = (id, ms = 3500) => {
     const el = document.getElementById(id);
     if (!el) return;
     el.classList.remove('hidden');
-    setTimeout(() => el.classList.add('hidden'), duration);
-  }
-
-  window.addEventListener('offline', () => showToast('offline-toast', 4000));
+    setTimeout(() => el.classList.add('hidden'), ms);
+  };
+  window.addEventListener('offline', () => showToast('offline-toast', 4500));
   window.addEventListener('online',  () => showToast('online-toast',  3000));
 </script>
 </body>
