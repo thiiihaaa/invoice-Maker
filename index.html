@@ -151,63 +151,141 @@
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-thumb { background: #FFCEE3; border-radius: 99px; }
 
-    /* ══════════════ PRINT ══════════════ */
+    /* ══════════════════════════════════
+       PRINT  —  Cute but Professional
+    ══════════════════════════════════ */
     @media print {
-      @page { size: A4 portrait; margin: 8mm 10mm; }
+      @page { size: A4 portrait; margin: 10mm 12mm; }
       * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-      body { background: white !important; }
-      .no-print, .sticky-bar { display: none !important; }
-      .fixed { display: none !important; }
-      footer { display: none !important; }
 
-      #app { max-width:100% !important; padding:0 !important; display:flex !important; flex-direction:column !important; gap:5px !important; }
-      .glass { background:white !important; backdrop-filter:none !important; box-shadow:none !important; border:1.5px solid #FFCEE3 !important; border-radius:8px !important; margin:0 !important; }
-      .sec-label { padding:2px 7px !important; margin-bottom:4px !important; font-size:0.52rem !important; }
-      .item-card { padding:4px 6px !important; border-radius:6px !important; }
+      body { background: white !important; padding: 0 !important; }
+      .no-print, .sticky-bar, .fixed, footer { display: none !important; }
 
-      #card-header { padding:6px 10px !important; }
-      #card-header .serif { font-size:1.35rem !important; }
-      #card-header .logo-box { width:40px !important; height:40px !important; }
-      #card-header .inp, #card-header .inp-navy { font-size:0.68rem !important; padding:10px 10px 2px !important; }
-      #card-header .fl label { font-size:0.5rem !important; }
-      #card-header .space-y-2 > * + * { margin-top:3px !important; }
+      #app {
+        max-width: 100% !important; padding: 0 !important;
+        display: flex !important; flex-direction: column !important; gap: 6px !important;
+      }
 
-      #card-billto { padding:5px 10px !important; }
-      #card-billto .inp-navy { font-size:0.68rem !important; padding:10px 10px 2px !important; }
-      #card-billto .fl label { font-size:0.5rem !important; }
+      /* Default card: white, thin blush border */
+      .glass {
+        background: white !important; backdrop-filter: none !important;
+        box-shadow: none !important; border: 1.5px solid #FFCEE3 !important;
+        border-radius: 10px !important; margin: 0 !important;
+      }
 
-      /* force Bill To 3 col on print */
-      #billto-grid { grid-template-columns: repeat(3,1fr) !important; gap:3px !important; }
+      /* Section labels */
+      .sec-label { padding: 2px 8px !important; margin-bottom: 5px !important; font-size: 0.55rem !important; }
 
-      #card-items { padding:8px 10px !important; }
-      #card-items .col-header { font-size:0.6rem !important; }
-      /* force item rows to table layout on print */
-      .item-card { display:grid !important; grid-template-columns:5fr 1.5fr 2fr 2fr auto !important; gap:3px !important; align-items:center !important; padding:3px 5px !important; }
-      .item-desc { grid-column:1 !important; }
-      .item-qty  { grid-column:2 !important; }
-      .item-price{ grid-column:3 !important; }
-      .item-total{ grid-column:4 !important; }
-      .item-del  { display:none !important; }
-      .item-mobile-label { display:none !important; }
-      .item-card .inp { font-size:0.72rem !important; padding:3px 5px !important; border-radius:4px !important; }
-      .item-total-val { font-size:0.78rem !important; }
+      /* ── HEADER: full navy band ── */
+      #card-header {
+        background: #021A54 !important;
+        border: none !important;
+        border-radius: 10px !important;
+        padding: 10px 14px !important;
+      }
+      #card-header .logo-box { width: 48px !important; height: 48px !important; border-color: rgba(255,255,255,0.3) !important; }
+      #card-header .space-y-2 > * + * { margin-top: 3px !important; }
 
-      #card-items .totals-block { max-width:220px !important; }
-      #card-items .totals-block * { font-size:0.72rem !important; }
-      .grand-label { font-size:0.88rem !important; }
-      .grand-value { font-size:1.05rem !important; }
-      #card-items .my-4 { margin:4px 0 !important; }
-      #card-items .space-y-2 > * + * { margin-top:3px !important; }
+      /* inputs inside navy header → white text on transparent bg */
+      #card-header .inp,
+      #card-header .inp-navy {
+        background: rgba(255,255,255,0.1) !important;
+        border-color: rgba(255,255,255,0.2) !important;
+        color: white !important;
+        font-size: 0.7rem !important;
+        padding: 10px 10px 2px !important;
+        border-radius: 6px !important;
+      }
+      #card-header .fl label { color: rgba(255,255,255,0.45) !important; font-size: 0.48rem !important; }
+      #card-header .fl input:not(:placeholder-shown) ~ label { color: #FFCEE3 !important; }
+      #card-header .fl textarea:not(:placeholder-shown) ~ label { color: #FFCEE3 !important; }
 
-      #bottom-row { display:grid !important; grid-template-columns:1fr 1fr !important; gap:5px !important; }
-      #bottom-row .glass { padding:6px 8px !important; }
-      #bottom-row .inp-navy { font-size:0.68rem !important; padding:10px 10px 2px !important; }
-      #bottom-row .fl label { font-size:0.5rem !important; }
-      #bottom-row textarea { font-size:0.68rem !important; line-height:1.3 !important; }
-      #bottom-row .space-y-2 > * + * { margin-top:2px !important; }
+      /* Invoice title white; status badge soft pink */
+      #card-header .serif { color: white !important; font-size: 1.55rem !important; }
+      #card-header #status-badge {
+        background: rgba(255,133,187,0.25) !important;
+        border: 1px solid rgba(255,133,187,0.5) !important;
+        color: #FFCEE3 !important;
+        font-size: 0.55rem !important;
+        padding: 2px 8px !important;
+        min-height: auto !important;
+      }
+      /* tint icons in header */
+      #card-header i { color: rgba(255,255,255,0.6) !important; }
+      #card-header .ph-receipt { color: #FFCEE3 !important; }
+      /* divider in header */
+      #card-header .border-t { border-color: rgba(255,255,255,0.15) !important; padding-top: 8px !important; }
 
-      #card-status { padding:4px 10px !important; }
-      #card-status .status-btn { padding:1px 8px !important; font-size:0.58rem !important; min-height:auto !important; }
+      /* ── BILL TO ── */
+      #card-billto { padding: 6px 12px !important; }
+      #billto-grid { grid-template-columns: repeat(3,1fr) !important; gap: 4px !important; }
+      #card-billto .inp-navy { font-size: 0.7rem !important; padding: 10px 10px 2px !important; border-radius: 6px !important; }
+      #card-billto .fl label  { font-size: 0.5rem !important; }
+
+      /* ── ITEMS TABLE ── */
+      #card-items { padding: 8px 12px !important; }
+
+      /* Column headers: navy underline */
+      #card-items .hidden.sm\:grid {
+        display: grid !important;
+        border-bottom: 2px solid #021A54 !important;
+        padding-bottom: 4px !important;
+        margin-bottom: 1px !important;
+      }
+      #card-items .col-header { font-size: 0.6rem !important; font-weight: 800 !important; }
+
+      /* Item rows: show desktop grid, hide mobile cards */
+      .item-mobile-label { display: none !important; }
+      .item-card > div.sm\:hidden  { display: none !important; }
+      .item-card > div.hidden { display: grid !important; }
+
+      /* Zebra striping on rows */
+      #item-rows > div:nth-child(even) { background: rgba(255,206,227,0.12) !important; }
+
+      /* Row styling */
+      .item-card {
+        background: transparent !important;
+        border: none !important;
+        border-bottom: 1px solid #FFCEE3 !important;
+        border-radius: 0 !important;
+        padding: 3px 2px !important;
+      }
+      .item-card > div.hidden {
+        grid-template-columns: 5fr 1.2fr 2fr 2fr 0px !important;
+        gap: 4px !important; align-items: center !important;
+      }
+      .item-card input    { font-size: 0.75rem !important; padding: 3px 6px !important; border-radius: 4px !important; }
+      .item-total-val     { font-size: 0.78rem !important; font-weight: 700 !important; }
+      .item-del           { display: none !important; }
+
+      /* Totals block */
+      #card-items .my-4   { margin: 5px 0 !important; }
+      #card-items .totals-block { max-width: 240px !important; }
+      #card-items .space-y-2 > * + * { margin-top: 3px !important; }
+      #card-items .totals-block .flex { font-size: 0.72rem !important; }
+
+      /* Grand total: pink highlight box */
+      #card-items .pt-3.border-t {
+        background: linear-gradient(135deg, #fff0f7, #FFCEE3) !important;
+        border: 1.5px solid #FF85BB !important;
+        border-radius: 8px !important;
+        padding: 6px 10px !important;
+        margin-top: 5px !important;
+      }
+      .grand-label { font-size: 0.88rem !important; font-weight: 700 !important; }
+      .grand-value { font-size: 1.1rem !important; }
+
+      /* ── NOTES + PAYMENT: side by side ── */
+      #bottom-row { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 6px !important; }
+      #bottom-row .glass    { padding: 7px 10px !important; }
+      #bottom-row .inp-navy { font-size: 0.7rem !important; padding: 10px 10px 2px !important; border-radius: 6px !important; }
+      #bottom-row .fl label { font-size: 0.5rem !important; }
+      #bottom-row textarea  { font-size: 0.7rem !important; line-height: 1.35 !important; padding: 6px 8px !important; }
+      #bottom-row .space-y-2 > * + * { margin-top: 3px !important; }
+
+      /* ── STATUS bar ── */
+      #card-status { padding: 4px 12px !important; }
+      #card-status .status-btn { min-height: auto !important; padding: 1px 8px !important; font-size: 0.58rem !important; }
     }
   </style>
 </head>
