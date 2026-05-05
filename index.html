@@ -500,6 +500,7 @@
       </div>
       <div class="no-print flex gap-2">
         <button onclick="clearAll()" class="px-4 rounded-2xl text-sm font-medium transition flex items-center gap-1.5" style="background:#F5F5F5; color:#021A54"><i class="ph ph-arrow-counter-clockwise"></i> Clear</button>
+        <button onclick="showPreview()" class="px-4 rounded-2xl text-sm font-semibold transition flex items-center gap-1.5" style="background:#e8ecf5; color:#021A54; border:1.5px solid #d0d8ef"><i class="ph ph-eye"></i> Preview</button>
         <button onclick="window.print()" class="px-5 rounded-2xl text-white text-sm font-semibold transition flex items-center gap-2" style="background:linear-gradient(135deg,#FF85BB,#e0609a); box-shadow:0 4px 14px rgba(255,133,187,0.4)"><i class="ph ph-printer"></i> Print / PDF</button>
       </div>
     </div>
@@ -528,10 +529,15 @@
               style="background:#F5F5F5; color:#021A54; min-height:48px">
         <i class="ph ph-arrow-counter-clockwise text-lg"></i> Clear
       </button>
+      <button onclick="showPreview()"
+              class="flex-1 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 transition active:scale-95"
+              style="background:#e8ecf5; color:#021A54; border:1.5px solid #d0d8ef; min-height:48px">
+        <i class="ph ph-eye text-lg"></i> Preview
+      </button>
       <button onclick="window.print()"
-              class="flex-[2] rounded-2xl text-white text-sm font-bold flex items-center justify-center gap-2 transition active:scale-95"
+              class="flex-1 rounded-2xl text-white text-sm font-bold flex items-center justify-center gap-2 transition active:scale-95"
               style="background:linear-gradient(135deg,#FF85BB,#e0609a); box-shadow:0 4px 16px rgba(255,133,187,0.4); min-height:48px">
-        <i class="ph ph-printer text-lg"></i> Print / Save PDF
+        <i class="ph ph-printer text-lg"></i> Print
       </button>
     </div>
   </div>
@@ -811,6 +817,229 @@
   };
   window.addEventListener('offline', () => showToast('offline-toast', 4500));
   window.addEventListener('online',  () => showToast('online-toast',  3000));
+
+  /* ══════════════════════════════════
+     PRINT PREVIEW
+  ══════════════════════════════════ */
+  function val(id) { return (document.getElementById(id)?.value || '').trim(); }
+
+  function fmtDate(d) {
+    if (!d) return '—';
+    const [y,m,day] = d.split('-');
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${parseInt(day)} ${months[parseInt(m)-1]} ${y}`;
+  }
+
+  function showPreview() {
+    document.getElementById('preview-body').innerHTML = buildPreviewHTML();
+    const modal = document.getElementById('preview-modal');
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closePreview() {
+    document.getElementById('preview-modal').classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  function printFromPreview() {
+    closePreview();
+    setTimeout(() => window.print(), 120);
+  }
+
+  function buildPreviewHTML() {
+    const bizName    = val('biz-name')       || 'Your Business';
+    const bizAddress = val('biz-address')    || '';
+    const invNum     = val('inv-num')        || '#001';
+    const invDate    = fmtDate(val('inv-date'));
+    const invDue     = fmtDate(val('inv-due'));
+    const cName      = val('client-name')    || '—';
+    const cEmail     = val('client-email')   || '';
+    const cAddress   = val('client-address') || '';
+    const notes      = val('notes')          || '';
+    const bankName   = val('bank-name')      || '';
+    const accountNum = val('account-num')    || '';
+    const routingNum = val('routing-num')    || '';
+
+    const logoHidden = document.getElementById('logo-preview').classList.contains('hidden');
+    const logoSrc    = document.getElementById('logo-preview').src;
+
+    const badge      = document.getElementById('status-badge');
+    const badgeBg    = badge.style.background || '#FF85BB';
+    const badgeTxt   = badge.textContent.trim();
+
+    // Build item rows
+    let itemRowsHTML = '';
+    let rowIdx = 0;
+    document.querySelectorAll('#item-rows > div[id^="row-"]').forEach(row => {
+      rowIdx++;
+      const descEl  = row.querySelector('input[placeholder*="description"]');
+      const qtyEl   = row.querySelector('[id$="-qty-m"]') || row.querySelector('[id$="-qty"]');
+      const priceEl = row.querySelector('[id$="-price-m"]') || row.querySelector('[id$="-price-d"]');
+      const totalEl = row.querySelector('[id$="-total"]:not([id$="-total-m"])');
+      const desc  = descEl?.value  || '';
+      const qty   = qtyEl?.value   || '0';
+      const price = parseInt(priceEl?.value || '0').toLocaleString();
+      const total = totalEl?.textContent || '0 MMK';
+      const rowBg = rowIdx % 2 === 0 ? 'rgba(255,206,227,0.12)' : 'transparent';
+      itemRowsHTML += `
+        <tr style="background:${rowBg}; border-bottom:1px solid #FFCEE3">
+          <td style="padding:6px 8px;font-size:11.5px;color:#021A54">${desc || '<span style="opacity:.3">—</span>'}</td>
+          <td style="padding:6px 8px;font-size:11.5px;color:#021A54;text-align:center">${qty}</td>
+          <td style="padding:6px 8px;font-size:11.5px;color:#021A54;text-align:right">${price}</td>
+          <td style="padding:6px 8px;font-size:11.5px;color:#FF85BB;text-align:right;font-weight:700">${total}</td>
+        </tr>`;
+    });
+
+    const subtotal  = document.getElementById('subtotal').textContent;
+    const taxAmt    = document.getElementById('tax-amount').textContent;
+    const taxRate   = document.getElementById('tax-rate').value || '0';
+    const discAmt   = document.getElementById('discount-amount').textContent;
+    const grandTot  = document.getElementById('grand-total').textContent;
+
+    return `
+    <style>
+      .pv * { font-family:'Nunito',sans-serif; box-sizing:border-box; }
+      .pv .pac { font-family:'Pacifico',cursive; }
+    </style>
+    <div class="pv" style="background:white;border-radius:14px;overflow:hidden;box-shadow:0 8px 40px rgba(2,26,84,0.18);max-width:700px;margin:0 auto">
+
+      <!-- Navy header -->
+      <div style="background:#021A54;padding:16px 20px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px">
+        <div style="display:flex;align-items:flex-start;gap:12px;flex:1">
+          ${!logoHidden && logoSrc ? `<img src="${logoSrc}" style="width:52px;height:52px;border-radius:12px;object-fit:contain;border:1.5px solid rgba(255,255,255,0.25);flex-shrink:0" />` : ''}
+          <div>
+            <div style="font-size:15px;font-weight:800;color:white;line-height:1.2">${bizName}</div>
+            <div style="font-size:10.5px;color:rgba(255,255,255,0.6);margin-top:4px;white-space:pre-line;line-height:1.5">${bizAddress}</div>
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div class="pac" style="font-size:28px;color:white;line-height:1">Invoice</div>
+          <div style="margin:6px 0 8px;display:flex;justify-content:flex-end">
+            <span style="background:${badgeBg};color:white;font-size:10px;font-weight:700;padding:2px 10px;border-radius:99px">${badgeTxt}</span>
+          </div>
+          <table style="margin-left:auto;font-size:10.5px;color:rgba(255,255,255,0.75);border-collapse:collapse">
+            <tr><td style="padding:1px 6px 1px 0;opacity:.6">Invoice #</td><td style="color:white;font-weight:700">${invNum}</td></tr>
+            <tr><td style="padding:1px 6px 1px 0;opacity:.6">Date</td><td style="color:white">${invDate}</td></tr>
+            <tr><td style="padding:1px 6px 1px 0;opacity:.6">Due Date</td><td style="color:white">${invDue}</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- Bill To -->
+      <div style="padding:10px 20px;border-bottom:1.5px solid #FFCEE3">
+        <div style="display:inline-flex;align-items:center;gap:5px;background:#e8ecf5;color:#021A54;font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:2px 10px;border-radius:99px;margin-bottom:7px">
+          <i class="ph ph-user-circle"></i> Bill To
+        </div>
+        <div style="display:flex;gap:24px;flex-wrap:wrap">
+          <div><div style="font-size:13px;font-weight:700;color:#021A54">${cName}</div><div style="font-size:10.5px;color:#021A54;opacity:.6;margin-top:2px">${cEmail}</div></div>
+          ${cAddress ? `<div style="font-size:10.5px;color:#021A54;opacity:.6">${cAddress}</div>` : ''}
+        </div>
+      </div>
+
+      <!-- Items table -->
+      <div style="padding:10px 20px">
+        <div style="display:inline-flex;align-items:center;gap:5px;background:#fff0f7;color:#FF85BB;font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:2px 10px;border-radius:99px;margin-bottom:8px">
+          <i class="ph ph-list-checks"></i> Items
+        </div>
+        <table style="width:100%;border-collapse:collapse">
+          <thead>
+            <tr style="border-bottom:2px solid #021A54">
+              <th style="padding:4px 8px;font-size:10px;font-weight:800;color:#021A54;text-align:left;text-transform:uppercase;letter-spacing:.06em">Description</th>
+              <th style="padding:4px 8px;font-size:10px;font-weight:800;color:#021A54;text-align:center;text-transform:uppercase;letter-spacing:.06em">Qty</th>
+              <th style="padding:4px 8px;font-size:10px;font-weight:800;color:#021A54;text-align:right;text-transform:uppercase;letter-spacing:.06em">Unit Price</th>
+              <th style="padding:4px 8px;font-size:10px;font-weight:800;color:#021A54;text-align:right;text-transform:uppercase;letter-spacing:.06em">Total</th>
+            </tr>
+          </thead>
+          <tbody>${itemRowsHTML}</tbody>
+        </table>
+
+        <!-- Totals -->
+        <div style="display:flex;justify-content:flex-end;margin-top:10px">
+          <div style="min-width:240px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#021A54;opacity:.7;padding:3px 0">
+              <span>Subtotal</span><span>${subtotal}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#021A54;opacity:.7;padding:3px 0">
+              <span>Tax (${taxRate}%)</span><span>${taxAmt}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#FF85BB;padding:3px 0">
+              <span>Discount</span><span>${discAmt}</span>
+            </div>
+            <!-- Grand Total box -->
+            <div style="display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,#fff0f7,#FFCEE3);border:1.5px solid #FF85BB;border-radius:10px;padding:8px 12px;margin-top:6px">
+              <span class="pac" style="font-size:16px;color:#021A54">Grand Total</span>
+              <span class="pac" style="font-size:20px;color:#FF85BB">${grandTot}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notes + Payment -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1.5px solid #FFCEE3">
+        <div style="padding:10px 20px;border-right:1.5px solid #FFCEE3">
+          <div style="display:inline-flex;align-items:center;gap:5px;background:#faefd8;color:#b07a20;font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:2px 10px;border-radius:99px;margin-bottom:6px">
+            <i class="ph ph-note-pencil"></i> Notes
+          </div>
+          <div style="font-size:10.5px;color:#021A54;opacity:.75;line-height:1.5;white-space:pre-line">${notes || 'Thank you for your business! 🌸'}</div>
+        </div>
+        <div style="padding:10px 20px">
+          <div style="display:inline-flex;align-items:center;gap:5px;background:#e8ecf5;color:#021A54;font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:2px 10px;border-radius:99px;margin-bottom:6px">
+            <i class="ph ph-bank"></i> Payment
+          </div>
+          ${bankName   ? `<div style="font-size:10.5px;color:#021A54;line-height:1.8"><span style="opacity:.5">Bank</span> ${bankName}</div>` : ''}
+          ${accountNum ? `<div style="font-size:10.5px;color:#021A54;line-height:1.8"><span style="opacity:.5">Account</span> ${accountNum}</div>` : ''}
+          ${routingNum ? `<div style="font-size:10.5px;color:#021A54;line-height:1.8"><span style="opacity:.5">Routing</span> ${routingNum}</div>` : ''}
+        </div>
+      </div>
+
+    </div>`;
+  }
 </script>
+
+<!-- ══ PREVIEW MODAL ══ -->
+<div id="preview-modal" class="hidden fixed inset-0 z-[100] no-print" style="background:rgba(2,26,84,0.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)">
+
+  <!-- Modal container -->
+  <div class="flex flex-col h-full">
+
+    <!-- Top bar -->
+    <div class="flex-shrink-0 flex items-center justify-between px-4 py-3 sm:px-6"
+         style="background:rgba(255,255,255,0.95);border-bottom:1.5px solid #FFCEE3;backdrop-filter:blur(12px)">
+      <div class="flex items-center gap-2">
+        <span style="background:#fff0f7;color:#FF85BB;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:5px">
+          <i class="ph ph-eye"></i> Preview
+        </span>
+        <span style="font-size:12px;color:#021A54;opacity:.45">Looks exactly like the printed invoice</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="printFromPreview()"
+                class="flex items-center gap-1.5 px-4 rounded-2xl text-white text-sm font-bold transition active:scale-95"
+                style="background:linear-gradient(135deg,#FF85BB,#e0609a);box-shadow:0 4px 12px rgba(255,133,187,0.4);min-height:40px">
+          <i class="ph ph-printer"></i> Print / PDF
+        </button>
+        <button onclick="closePreview()"
+                class="flex items-center justify-center rounded-2xl transition active:scale-95"
+                style="background:#F5F5F5;color:#021A54;min-height:40px;min-width:40px">
+          <i class="ph ph-x text-lg"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Scrollable preview area -->
+    <div class="flex-1 overflow-y-auto py-6 px-3 sm:px-8" style="background:rgba(241,241,248,0.6)">
+      <div id="preview-body"></div>
+      <!-- bottom print button for mobile -->
+      <div class="flex justify-center mt-5 sm:hidden">
+        <button onclick="printFromPreview()"
+                class="flex items-center gap-2 px-8 rounded-2xl text-white font-bold transition active:scale-95"
+                style="background:linear-gradient(135deg,#FF85BB,#e0609a);box-shadow:0 4px 14px rgba(255,133,187,0.4);min-height:50px;font-size:15px">
+          <i class="ph ph-printer text-xl"></i> Print / Save PDF
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
 </body>
 </html>
