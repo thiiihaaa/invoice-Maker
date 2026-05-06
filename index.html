@@ -218,7 +218,7 @@
 
       /* ── BILL TO ── */
       #card-billto { padding: 6px 12px !important; }
-      #billto-grid { grid-template-columns: repeat(3,1fr) !important; gap: 4px !important; }
+      #billto-grid { grid-template-columns: repeat(2,1fr) !important; gap: 4px !important; }
       #card-billto .inp-navy { font-size: 0.7rem !important; padding: 10px 10px 2px !important; border-radius: 6px !important; }
       #card-billto .fl label  { font-size: 0.5rem !important; }
 
@@ -374,18 +374,14 @@
       <div class="sec-label" style="background:#e8ecf5; color:#021A54">
         <i class="ph ph-user-circle"></i> Bill To
       </div>
-      <div id="billto-grid" class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-        <div class="fl sm:col-span-1">
+      <div id="billto-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <div class="fl">
           <input id="client-name" type="text" placeholder=" " class="inp-navy" />
           <label><i class="ph ph-user"></i> Client Name</label>
         </div>
-        <div class="fl sm:col-span-1">
-          <input id="client-email" type="email" placeholder=" " class="inp-navy" />
-          <label><i class="ph ph-envelope"></i> Email Address</label>
-        </div>
-        <div class="fl sm:col-span-1">
-          <input id="client-address" type="text" placeholder=" " class="inp-navy" />
-          <label><i class="ph ph-map-pin-area"></i> Address · City</label>
+        <div class="fl">
+          <input id="client-email" type="tel" placeholder=" " class="inp-navy" />
+          <label><i class="ph ph-phone"></i> Phone Number</label>
         </div>
       </div>
     </div>
@@ -750,7 +746,7 @@
   /* ── Clear ── */
   function clearAll() {
     if (!confirm('Clear all invoice data?')) return;
-    ['biz-name','biz-address','client-name','client-email','client-address',
+    ['biz-name','biz-address','client-name','client-email',
      'notes','bank-name','account-num','routing-num'].forEach(id => {
       const el = document.getElementById(id); if (el) el.value = '';
     });
@@ -855,7 +851,6 @@
     const invDue     = fmtDate(val('inv-due'));
     const cName      = val('client-name')    || '—';
     const cEmail     = val('client-email')   || '';
-    const cAddress   = val('client-address') || '';
     const notes      = val('notes')          || '';
     const bankName   = val('bank-name')      || '';
     const accountNum = val('account-num')    || '';
@@ -933,7 +928,6 @@
         </div>
         <div style="display:flex;gap:24px;flex-wrap:wrap">
           <div><div style="font-size:13px;font-weight:700;color:#021A54">${cName}</div><div style="font-size:10.5px;color:#021A54;opacity:.6;margin-top:2px">${cEmail}</div></div>
-          ${cAddress ? `<div style="font-size:10.5px;color:#021A54;opacity:.6">${cAddress}</div>` : ''}
         </div>
       </div>
 
