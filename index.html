@@ -24,6 +24,7 @@
         extend: {
           colors: {
             navy: { DEFAULT:'#021A54', soft:'#e8ecf5', border:'#d0d8ef' },
+            // legacy alias kept for compatibility
             pink: { DEFAULT:'#FF85BB', light:'#FFCEE3', pale:'#fff0f7', dark:'#e0609a' },
           }
         }
@@ -73,7 +74,7 @@
       transition: border-color .18s, box-shadow .18s;
       line-height: 1.3;
     }
-    .inp-navy:focus { outline: none; border-color: #021A54; box-shadow: 0 0 0 3px rgba(2,26,84,0.12); }
+    .inp-navy:focus { outline: none; border-color: #021A54; box-shadow: 0 0 0 3px rgba(2,26,84,0.15); }
 
     /* Floating label wrapper */
     .fl { position: relative; }
@@ -180,43 +181,40 @@
 
       /* ── HEADER: full navy band ── */
       #card-header {
-        background: #021A54 !important;
+        background: #B0D4F1 !important;
         border: none !important;
         border-radius: 10px !important;
         padding: 10px 14px !important;
       }
       #card-header .logo-box { width: 48px !important; height: 48px !important; border-color: rgba(255,255,255,0.3) !important; }
-      #card-header .space-y-2 > * + * { margin-top: 3px !important; }
+      #card-header .grid.grid-cols-3 { gap: 4px !important; }
 
-      /* inputs inside navy header → white text on transparent bg */
+      /* inputs inside pale blue header */
       #card-header .inp,
       #card-header .inp-navy {
-        background: rgba(255,255,255,0.1) !important;
-        border-color: rgba(255,255,255,0.2) !important;
-        color: white !important;
+        background: rgba(255,255,255,0.75) !important;
+        border-color: rgba(147,197,253,0.7) !important;
+        color: #021A54 !important;
         font-size: 0.7rem !important;
         padding: 10px 10px 2px !important;
         border-radius: 6px !important;
       }
-      #card-header .fl label { color: rgba(255,255,255,0.45) !important; font-size: 0.48rem !important; }
-      #card-header .fl input:not(:placeholder-shown) ~ label { color: #FFCEE3 !important; }
-      #card-header .fl textarea:not(:placeholder-shown) ~ label { color: #FFCEE3 !important; }
+      #card-header .fl label { color: rgba(2,26,84,0.45) !important; font-size: 0.48rem !important; }
+      #card-header .fl input:not(:placeholder-shown) ~ label { color: #FF85BB !important; }
+      #card-header .fl textarea:not(:placeholder-shown) ~ label { color: #FF85BB !important; }
 
-      /* Invoice title white; status badge soft pink */
-      #card-header .serif { color: white !important; font-size: 1.55rem !important; }
+      /* Invoice title dark on pale blue */
+      #card-header .serif { color: #021A54 !important; font-size: 1.55rem !important; }
       #card-header #status-badge {
-        background: rgba(255,133,187,0.25) !important;
-        border: 1px solid rgba(255,133,187,0.5) !important;
-        color: #FFCEE3 !important;
         font-size: 0.55rem !important;
         padding: 2px 8px !important;
         min-height: auto !important;
       }
-      /* tint icons in header */
-      #card-header i { color: rgba(255,255,255,0.6) !important; }
-      #card-header .ph-receipt { color: #FFCEE3 !important; }
+      /* icons in header */
+      #card-header i { color: rgba(2,26,84,0.5) !important; }
+      #card-header .ph-receipt { color: #FF85BB !important; }
       /* divider in header */
-      #card-header .border-t { border-color: rgba(255,255,255,0.15) !important; padding-top: 8px !important; }
+      #card-header .border-t { border-color: rgba(147,197,253,0.5) !important; padding-top: 8px !important; }
 
       /* ── BILL TO ── */
       #card-billto { padding: 6px 12px !important; }
@@ -338,10 +336,10 @@
       </div>
 
       <!-- Row 2: Invoice title + fields -->
-      <div class="flex items-start justify-between gap-3 pt-2 border-t" style="border-color:#FFCEE3">
-        <!-- Left: title + badge -->
-        <div>
-          <div class="flex items-center gap-2 mb-1">
+      <div class="pt-2 border-t" style="border-color:#FFCEE3">
+        <!-- Top: title + badge -->
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
             <i class="ph ph-receipt text-2xl" style="color:#FF85BB"></i>
             <span class="serif text-3xl leading-none" style="color:#021A54">Invoice</span>
           </div>
@@ -352,20 +350,20 @@
           </span>
         </div>
 
-        <!-- Right: invoice # + dates -->
-        <div class="space-y-2" style="min-width:140px">
+        <!-- Invoice # + dates: 3 columns, full width -->
+        <div class="grid grid-cols-3 gap-2">
           <div class="fl">
             <input id="inv-num" type="text" placeholder=" " value="#001"
                    class="inp-navy inp-sm text-right" style="width:100%" />
-            <label class="right-3 left-auto"><i class="ph ph-hash"></i> Invoice #</label>
+            <label class="right-2 left-auto" style="font-size:9px"><i class="ph ph-hash"></i> No.</label>
           </div>
           <div class="fl">
-            <input id="inv-date" type="date" class="inp-navy inp-sm text-right" style="width:100%" />
-            <label class="right-3 left-auto"><i class="ph ph-calendar-blank"></i> Date</label>
+            <input id="inv-date" type="date" class="inp-navy inp-sm" style="width:100%;padding-right:6px" />
+            <label style="font-size:9px"><i class="ph ph-calendar-blank"></i> Date</label>
           </div>
           <div class="fl">
-            <input id="inv-due" type="date" class="inp-navy inp-sm text-right" style="width:100%" />
-            <label class="right-3 left-auto"><i class="ph ph-calendar-check"></i> Due Date</label>
+            <input id="inv-due" type="date" class="inp-navy inp-sm" style="width:100%;padding-right:6px" />
+            <label style="font-size:9px"><i class="ph ph-calendar-check"></i> Due</label>
           </div>
         </div>
       </div>
@@ -427,15 +425,6 @@
         </div>
         <div class="flex items-center justify-between" style="color:#021A54; opacity:.75">
           <div class="flex items-center gap-2">
-            <span class="text-sm flex items-center gap-1"><i class="ph ph-percent"></i> Tax</span>
-            <input id="tax-rate" type="number" value="0" min="0" max="100" oninput="calcTotals()"
-                   class="calc-input w-14" />
-            <span style="font-size:12px; opacity:.6">%</span>
-          </div>
-          <span id="tax-amount" class="text-sm">0 MMK</span>
-        </div>
-        <div class="flex items-center justify-between" style="color:#021A54; opacity:.75">
-          <div class="flex items-center gap-2">
             <span class="text-sm flex items-center gap-1"><i class="ph ph-ticket"></i> Discount</span>
             <input id="discount" type="number" value="0" min="0" oninput="calcTotals()"
                    class="calc-input w-20" />
@@ -492,14 +481,6 @@
 
   <!-- ─── STICKY BOTTOM BAR (mobile only) ─── -->
   <div class="sticky-bar sm:hidden no-print">
-    <!-- Status row -->
-    <div class="flex items-center gap-2 mb-2 overflow-x-auto pb-1" style="scrollbar-width:none">
-      <span class="text-xs font-bold uppercase tracking-widest flex-shrink-0 flex items-center gap-1" style="color:#021A54;opacity:.45">
-        <i class="ph ph-flag"></i>
-      </span>
-      <button onclick="setStatus('unpaid')"  id="mob-status-unpaid"  class="mob-status flex-shrink-0 px-3 rounded-full text-xs font-semibold border transition flex items-center gap-1"><i class="ph ph-clock-countdown"></i> Unpaid</button>
-      <button onclick="setStatus('paid')"    id="mob-status-paid"    class="mob-status flex-shrink-0 px-3 rounded-full text-xs font-semibold border transition flex items-center gap-1"><i class="ph ph-check-circle"></i> Paid</button>
-    </div>
     <!-- Action buttons -->
     <div class="grid grid-cols-4 gap-1.5">
       <button onclick="clearAll()"
@@ -687,15 +668,12 @@
   function calcTotals() {
     let sub = 0;
     // sum desktop totals (avoiding double-count with mobile mirrors)
-    document.querySelectorAll('[id$="-total"]:not([id$="-total-m"])').forEach(el => {
+    document.querySelectorAll('#item-rows [id$="-total"]:not([id$="-total-m"])').forEach(el => {
       sub += parse(el.textContent);
     });
-    const taxRate  = parseFloat(document.getElementById('tax-rate').value) || 0;
-    const discount = parseFloat(document.getElementById('discount').value)  || 0;
-    const tax   = sub * taxRate / 100;
-    const grand = Math.max(0, sub + tax - discount);
+    const discount = parseFloat(document.getElementById('discount').value) || 0;
+    const grand = Math.max(0, sub - discount);
     document.getElementById('subtotal').textContent        = fmt(sub);
-    document.getElementById('tax-amount').textContent      = fmt(tax);
     document.getElementById('discount-amount').textContent = '-' + fmt(discount);
     document.getElementById('grand-total').textContent     = fmt(grand);
   }
@@ -703,34 +681,30 @@
   /* ── Status ── */
   const SS = {
     unpaid:  { style:'background:#fff0f7;color:#FF85BB;border-color:#FFCEE3',    active:'background:#FF85BB;color:white;border-color:#FF85BB',    icon:'ph-clock-countdown', label:'Unpaid',  badge:'#FF85BB' },
-    paid:    { style:'background:#e8ecf5;color:#021A54;border-color:#d0d8ef',    active:'background:#021A54;color:white;border-color:#021A54',    icon:'ph-check-circle',    label:'Paid',    badge:'#021A54' },
+    paid:    { style:'background:#e8ecf5;color:#021A54;border-color:#d0d8ef',    active:'background:#B0D4F1;color:#021A54;border-color:#93C5FD',    icon:'ph-check-circle',    label:'Paid',    badge:'#B0D4F1', badgeText:'#021A54' },
   };
   let cur = null;
 
   function setStatus(s) {
     if (cur === s) { resetStatus(); return; }
     resetStatus(); cur = s;
-    ['status-', 'mob-status-'].forEach(prefix => {
-      const btn = document.getElementById(prefix + s);
-      if (btn) {
-        btn.setAttribute('style', SS[s].active);
-        btn.className = btn.className; // keep classes
-      }
-    });
+    const btn = document.getElementById('status-' + s);
+    if (btn) btn.setAttribute('style', SS[s].active);
     const badge = document.getElementById('status-badge');
     badge.style.background = SS[s].badge;
+    badge.style.color = SS[s].badgeText || 'white';
     badge.innerHTML = `<i class="ph ${SS[s].icon}"></i> ${SS[s].label}`;
   }
 
   function resetStatus() {
     Object.keys(SS).forEach(s => {
-      ['status-', 'mob-status-'].forEach(prefix => {
-        const btn = document.getElementById(prefix + s);
-        if (btn) btn.setAttribute('style', SS[s].style);
-      });
+      const btn = document.getElementById('status-' + s);
+      if (btn) btn.setAttribute('style', SS[s].style);
     });
-    document.getElementById('status-badge').style.background = '#FF85BB';
-    document.getElementById('status-badge').innerHTML = '<i class="ph ph-clock-countdown"></i> Unpaid';
+    const b = document.getElementById('status-badge');
+    b.style.background = '#FF85BB';
+    b.style.color = 'white';
+    b.innerHTML = '<i class="ph ph-clock-countdown"></i> Unpaid';
     cur = null;
   }
 
@@ -742,7 +716,6 @@
     });
     document.getElementById('notes').value = 'Thanks for shopping with Kuphoria! 🩵';
     document.getElementById('inv-num').value  = '#001';
-    document.getElementById('tax-rate').value = '0';
     document.getElementById('discount').value = '0';
     document.getElementById('inv-date').value = '';
     document.getElementById('inv-due').value  = '';
@@ -813,34 +786,35 @@
     const originals = [];
     btns.forEach(b => { originals.push(b.innerHTML); b.innerHTML = '<i class="ph ph-spinner-gap" style="animation:spin .7s linear infinite"></i> Generating…'; b.disabled = true; });
 
-    // Render into a visible-but-off-viewport container so the browser
-    // applies the main page's already-loaded fonts and icon styles
+    // A4 at 96 dpi = 794 × 1122 px; margins ~8mm top/bottom, ~10mm sides ≈ 30px / 38px
+    const A4W = 794, A4H = 1122;
+
     const wrap = document.createElement('div');
     wrap.style.cssText = [
       'position:fixed', 'top:0', 'left:0',
-      'width:740px', 'background:#f1f1f8',
-      'padding:20px', 'box-sizing:border-box',
-      'z-index:-999',                    // behind everything
+      `width:${A4W}px`, `min-height:${A4H}px`,
+      'background:white',
+      'padding:30px 38px',
+      'box-sizing:border-box',
+      'z-index:-999',
       'pointer-events:none',
-      'transform:translateX(-9999px)',   // off-screen horizontally
+      'transform:translateX(-9999px)',
     ].join(';');
     wrap.innerHTML = buildPreviewHTML();
     document.body.appendChild(wrap);
 
     try {
-      // Fonts are already loaded by the main page — just wait one frame for layout
       await document.fonts.ready;
       await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
       await new Promise(r => setTimeout(r, 120));
 
-      const invCard = wrap.querySelector('.pv') || wrap;
-
-      const dataURL = await htmlToImage.toPng(invCard, {
-        pixelRatio: 2,
+      const dataURL = await htmlToImage.toPng(wrap, {
+        pixelRatio: 2,          // → 1588 × 2244 px (A4 @ 192 dpi)
         backgroundColor: 'white',
-        skipFonts: false,       // let it embed fonts from the page
+        width: A4W,
+        height: Math.max(A4H, wrap.scrollHeight),
+        skipFonts: false,
         cacheBust: false,
-        style: { borderRadius: '14px' },
       });
 
       const invNum  = (val('inv-num') || 'invoice').replace(/[^a-z0-9]/gi, '-').toLowerCase();
@@ -899,23 +873,29 @@
 
   function printInvoice() {
     const content = buildPreviewHTML();
-    const win = window.open('', '_blank', 'width=820,height=1000');
+    const win = window.open('', '_blank', 'width=794,height=1122');
     const s = 'script', ss = '/' + s;
     win.document.write(`<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=794"/>
   <title>Invoice ${val('inv-num') || ''}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet"/>
   <${s} src="https://unpkg.com/@phosphor-icons/web@2.1.1"></${s}>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #f1f1f8; font-family: 'Nunito', sans-serif; padding: 24px; }
+    body {
+      background: white;
+      font-family: 'Nunito', sans-serif;
+      width: 794px;          /* A4 width at 96 dpi */
+      padding: 20px 24px;
+    }
     @page { size: A4 portrait; margin: 8mm 10mm; }
     @media print {
       * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-      body { background: white !important; padding: 0 !important; }
+      body { padding: 0 !important; }
     }
   </style>
 </head>
@@ -972,8 +952,6 @@
     });
 
     const subtotal  = document.getElementById('subtotal').textContent;
-    const taxAmt    = document.getElementById('tax-amount').textContent;
-    const taxRate   = document.getElementById('tax-rate').value || '0';
     const discAmt   = document.getElementById('discount-amount').textContent;
     const grandTot  = document.getElementById('grand-total').textContent;
 
@@ -984,24 +962,24 @@
     </style>
     <div class="pv" style="background:white;border-radius:14px;overflow:hidden;box-shadow:0 8px 40px rgba(2,26,84,0.18);max-width:700px;margin:0 auto">
 
-      <!-- Navy header -->
-      <div style="background:#021A54;padding:20px 24px;display:flex;align-items:flex-start;justify-content:space-between;gap:20px">
+      <!-- Header -->
+      <div style="background:#B0D4F1;padding:20px 24px;display:flex;align-items:flex-start;justify-content:space-between;gap:20px">
         <div style="display:flex;align-items:flex-start;gap:12px;flex:1">
-          ${!logoHidden && logoSrc ? `<img src="${logoSrc}" style="width:52px;height:52px;border-radius:12px;object-fit:contain;border:1.5px solid rgba(255,255,255,0.25);flex-shrink:0" />` : ''}
+          ${!logoHidden && logoSrc ? `<img src="${logoSrc}" style="width:52px;height:52px;border-radius:12px;object-fit:contain;border:1.5px solid rgba(147,197,253,0.6);flex-shrink:0" />` : ''}
           <div>
-            <div style="font-size:15px;font-weight:800;color:white;line-height:1.2">${bizName}</div>
-            <div style="font-size:10.5px;color:rgba(255,255,255,0.6);margin-top:4px;white-space:pre-line;line-height:1.5">${bizAddress}</div>
+            <div style="font-size:15px;font-weight:800;color:#021A54;line-height:1.2">${bizName}</div>
+            <div style="font-size:10.5px;color:rgba(2,26,84,0.6);margin-top:4px;white-space:pre-line;line-height:1.5">${bizAddress}</div>
           </div>
         </div>
         <div style="text-align:right;flex-shrink:0">
-          <div class="pac" style="font-size:30px;color:white;line-height:1.15;margin-bottom:8px">Invoice</div>
-          <div style="margin-bottom:10px;display:flex;justify-content:flex-end">
-            <span style="background:${badgeBg};color:white;font-size:10px;font-weight:700;padding:3px 12px;border-radius:99px;line-height:1.6">${badgeTxt}</span>
+          <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-bottom:10px">
+            <div class="pac" style="font-size:30px;color:#021A54;line-height:1.15">Invoice</div>
+            <span style="background:${badgeBg};color:${badgeBg === '#B0D4F1' ? '#021A54' : 'white'};font-size:10px;font-weight:700;padding:3px 12px;border-radius:99px;line-height:1.6;white-space:nowrap">${badgeTxt}</span>
           </div>
-          <table style="margin-left:auto;font-size:11px;color:rgba(255,255,255,0.75);border-collapse:collapse">
-            <tr><td style="padding:2px 8px 2px 0;opacity:.6">Invoice #</td><td style="color:white;font-weight:700">${invNum}</td></tr>
-            <tr><td style="padding:2px 8px 2px 0;opacity:.6">Date</td><td style="color:white">${invDate}</td></tr>
-            <tr><td style="padding:2px 8px 2px 0;opacity:.6">Due Date</td><td style="color:white">${invDue}</td></tr>
+          <table style="margin-left:auto;font-size:11px;color:rgba(2,26,84,0.6);border-collapse:collapse">
+            <tr><td style="padding:2px 8px 2px 0">Invoice #</td><td style="color:#021A54;font-weight:700">${invNum}</td></tr>
+            <tr><td style="padding:2px 8px 2px 0">Date</td><td style="color:#021A54">${invDate}</td></tr>
+            <tr><td style="padding:2px 8px 2px 0">Due Date</td><td style="color:#021A54">${invDue}</td></tr>
           </table>
         </div>
       </div>
@@ -1038,9 +1016,6 @@
           <div style="min-width:280px;max-width:320px;width:100%">
             <div style="display:flex;justify-content:space-between;gap:16px;font-size:12px;color:#021A54;opacity:.7;padding:4px 0">
               <span>Subtotal</span><span style="font-weight:600">${subtotal}</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;gap:16px;font-size:12px;color:#021A54;opacity:.7;padding:4px 0">
-              <span>Tax (${taxRate}%)</span><span style="font-weight:600">${taxAmt}</span>
             </div>
             <div style="display:flex;justify-content:space-between;gap:16px;font-size:12px;color:#FF85BB;padding:4px 0">
               <span>Discount</span><span style="font-weight:600">${discAmt}</span>
