@@ -17,7 +17,7 @@
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
-  <script src="https://unpkg.com/html-to-image@1.11.11/dist/html-to-image.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -784,43 +784,50 @@
   async function savePNG() {
     const btns = document.querySelectorAll('[onclick="savePNG()"]');
     const originals = [];
-    btns.forEach(b => { originals.push(b.innerHTML); b.innerHTML = '<i class="ph ph-spinner-gap" style="animation:spin .7s linear infinite"></i> Generating…'; b.disabled = true; });
+    btns.forEach(b => {
+      originals.push(b.innerHTML);
+      b.innerHTML = '<i class="ph ph-spinner-gap" style="animation:spin .7s linear infinite"></i> Generating…';
+      b.disabled = true;
+    });
 
-    const modal   = document.getElementById('preview-modal');
-    const body    = document.getElementById('preview-body');
-    let   dataURL = null;
+    const modal = document.getElementById('preview-modal');
+    const previewBody = document.getElementById('preview-body');
+    let dataURL = null;
+
+    // Render invoice into preview modal, invisible but fully laid out
+    previewBody.innerHTML = buildPreviewHTML();
+    modal.style.visibility = 'hidden';
+    modal.classList.remove('hidden');
 
     try {
-      // Render invoice into the preview modal (already in DOM = fonts & icons ready)
-      body.innerHTML = buildPreviewHTML();
-
-      // Show modal invisibly so browser lays it out fully
-      modal.style.visibility = 'hidden';
-      modal.classList.remove('hidden');
-      document.body.style.overflow = 'hidden';
-
-      // Wait for layout + fonts (already in browser cache from main page)
+      // Let browser fully render (fonts + icons already loaded in main page)
       await document.fonts.ready;
-      await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-      await new Promise(r => setTimeout(r, 150));
+      await new Promise(r => setTimeout(r, 300));
 
-      const card = body.querySelector('.pv') || body;
+      const card = previewBody.querySelector('.pv') || previewBody;
 
-      dataURL = await htmlToImage.toPng(card, {
-        pixelRatio: 2,
-        backgroundColor: 'white',
-        skipFonts: true,   // fonts already loaded in page — no re-fetch needed
-        cacheBust: true,
+      // html2canvas reads actual rendered pixels — no external fetches needed
+      const canvas = await html2canvas(card, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        onclone: (doc) => {
+          // Make sure cloned element is visible for capture
+          const el = doc.querySelector('.pv') || doc.body;
+          el.style.visibility = 'visible';
+        }
       });
+
+      dataURL = canvas.toDataURL('image/png');
 
     } catch (err) {
       console.error('[PNG]', err);
       alert('Could not generate PNG — please try again.');
     } finally {
-      // Always restore modal state
       modal.classList.add('hidden');
       modal.style.visibility = '';
-      document.body.style.overflow = '';
       btns.forEach((b, i) => { b.innerHTML = originals[i]; b.disabled = false; });
     }
 
