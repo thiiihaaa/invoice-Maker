@@ -786,55 +786,55 @@
     const originals = [];
     btns.forEach(b => { originals.push(b.innerHTML); b.innerHTML = '<i class="ph ph-spinner-gap" style="animation:spin .7s linear infinite"></i> Generating…'; b.disabled = true; });
 
-    // A4 at 96 dpi = 794 × 1122 px; margins ~8mm top/bottom, ~10mm sides ≈ 30px / 38px
-    const A4W = 794, A4H = 1122;
-
-    const wrap = document.createElement('div');
-    wrap.style.cssText = [
-      'position:fixed', 'top:0', 'left:0',
-      `width:${A4W}px`, `min-height:${A4H}px`,
-      'background:white',
-      'padding:30px 38px',
-      'box-sizing:border-box',
-      'z-index:-999',
-      'pointer-events:none',
-      'transform:translateX(-9999px)',
-    ].join(';');
-    wrap.innerHTML = buildPreviewHTML();
-    document.body.appendChild(wrap);
+    const modal   = document.getElementById('preview-modal');
+    const body    = document.getElementById('preview-body');
+    let   dataURL = null;
 
     try {
+      // Render invoice into the preview modal (already in DOM = fonts & icons ready)
+      body.innerHTML = buildPreviewHTML();
+
+      // Show modal invisibly so browser lays it out fully
+      modal.style.visibility = 'hidden';
+      modal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+
+      // Wait for layout + fonts (already in browser cache from main page)
       await document.fonts.ready;
       await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-      await new Promise(r => setTimeout(r, 120));
+      await new Promise(r => setTimeout(r, 150));
 
-      const dataURL = await htmlToImage.toPng(wrap, {
-        pixelRatio: 2,          // → 1588 × 2244 px (A4 @ 192 dpi)
+      const card = body.querySelector('.pv') || body;
+
+      dataURL = await htmlToImage.toPng(card, {
+        pixelRatio: 2,
         backgroundColor: 'white',
-        width: A4W,
-        height: Math.max(A4H, wrap.scrollHeight),
-        skipFonts: false,
-        cacheBust: false,
+        skipFonts: true,   // fonts already loaded in page — no re-fetch needed
+        cacheBust: true,
       });
-
-      const invNum  = (val('inv-num') || 'invoice').replace(/[^a-z0-9]/gi, '-').toLowerCase();
-      const filename = `invoice-${invNum}.png`;
-
-      [document.getElementById('png-download-btn'), document.getElementById('png-download-mobile')].forEach(a => {
-        if (a) { a.href = dataURL; a.download = filename; }
-      });
-      document.getElementById('png-result').src = dataURL;
-
-      document.getElementById('png-modal').classList.remove('hidden');
-      document.body.style.overflow = 'hidden';
 
     } catch (err) {
       console.error('[PNG]', err);
       alert('Could not generate PNG — please try again.');
     } finally {
-      document.body.removeChild(wrap);
+      // Always restore modal state
+      modal.classList.add('hidden');
+      modal.style.visibility = '';
+      document.body.style.overflow = '';
       btns.forEach((b, i) => { b.innerHTML = originals[i]; b.disabled = false; });
     }
+
+    if (!dataURL) return;
+
+    const invNum  = (val('inv-num') || 'invoice').replace(/[^a-z0-9]/gi, '-').toLowerCase();
+    const filename = `invoice-${invNum}.png`;
+
+    [document.getElementById('png-download-btn'), document.getElementById('png-download-mobile')].forEach(a => {
+      if (a) { a.href = dataURL; a.download = filename; }
+    });
+    document.getElementById('png-result').src = dataURL;
+    document.getElementById('png-modal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
   }
 
   function closePNG() {
