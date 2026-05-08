@@ -3,7 +3,7 @@
    Cache-first for local, network-first for CDN
 ═══════════════════════════════════════ */
 
-const CACHE  = 'invoice-maker-v2';
+const CACHE  = 'invoice-maker-v3';
 const SHELL  = [
   './',
   './index.html',
@@ -38,19 +38,18 @@ self.addEventListener('fetch', e => {
   // Skip non-GET and browser-extension requests
   if (e.request.method !== 'GET' || url.protocol === 'chrome-extension:') return;
 
-  // Same-origin → Cache First (offline ready)
+  // Same-origin → Network First (always get latest), fall back to cache offline
   if (url.origin === self.location.origin) {
     e.respondWith(
-      caches.match(e.request).then(cached => {
-        if (cached) return cached;
-        return fetch(e.request).then(res => {
+      fetch(e.request)
+        .then(res => {
           if (res && res.status === 200) {
             const clone = res.clone();
             caches.open(CACHE).then(c => c.put(e.request, clone));
           }
           return res;
-        });
-      })
+        })
+        .catch(() => caches.match(e.request))
     );
     return;
   }
