@@ -444,9 +444,6 @@
     <!-- ─── NOTES & PAYMENT ─── -->
     <div id="bottom-row" class="grid grid-cols-1 gap-3">
       <div class="glass rounded-3xl p-4" style="box-shadow:0 4px 16px rgba(2,26,84,0.06)">
-        <div class="sec-label" style="background:#faefd8; color:#b07a20">
-          <i class="ph ph-note-pencil"></i> Notes
-        </div>
         <textarea id="notes" rows="3" placeholder="Thanks for shopping with Kuphoria! 🩵"
                   class="w-full rounded-2xl px-4 py-3 resize-none focus:outline-none transition leading-snug"
                   style="background:rgba(245,245,245,0.6); border:1.5px solid #FFCEE3; color:#021A54; font-size:16px !important">Thanks for shopping with Kuphoria! 🩵</textarea>
@@ -933,7 +930,7 @@
 
     const badge      = document.getElementById('status-badge');
     const badgeBg    = badge.style.background || '#FF85BB';
-    const badgeTxt   = badge.textContent.trim();
+    const badgeTxt   = badge.textContent.trim().replace(/\s+/g, ' ');
 
     // Build item rows
     let itemRowsHTML = '';
@@ -970,42 +967,35 @@
     <div class="pv" style="background:white;border-radius:14px;overflow:hidden;box-shadow:0 8px 40px rgba(2,26,84,0.18);max-width:700px;margin:0 auto">
 
       <!-- Header -->
-      <div style="background:#B0D4F1;padding:20px 24px;display:flex;align-items:flex-start;justify-content:space-between;gap:20px">
-        <div style="display:flex;align-items:flex-start;gap:12px;flex:1">
-          ${!logoHidden && logoSrc ? `<img src="${logoSrc}" style="width:52px;height:52px;border-radius:12px;object-fit:contain;border:1.5px solid rgba(147,197,253,0.6);flex-shrink:0" />` : ''}
+      <div style="background:#B0D4F1;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px;flex:1">
+          ${!logoHidden && logoSrc ? `<img src="${logoSrc}" style="width:36px;height:36px;border-radius:8px;object-fit:contain;border:1px solid rgba(147,197,253,0.6);flex-shrink:0" />` : ''}
           <div>
-            <div style="font-size:15px;font-weight:800;color:#021A54;line-height:1.2">${bizName}</div>
-            <div style="font-size:10.5px;color:rgba(2,26,84,0.6);margin-top:4px;white-space:pre-line;line-height:1.5">${bizAddress}</div>
+            <div style="font-size:13px;font-weight:800;color:#021A54;line-height:1.2">${bizName}</div>
+            <div style="font-size:9px;color:rgba(2,26,84,0.6);margin-top:2px;white-space:pre-line;line-height:1.4">${bizAddress}</div>
           </div>
         </div>
-        <div style="text-align:right;flex-shrink:0">
-          <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-bottom:10px">
-            <div class="pac" style="font-size:30px;color:#021A54;line-height:1.15">Invoice</div>
-            <span style="background:${badgeBg};color:${badgeBg === '#B0D4F1' ? '#021A54' : 'white'};font-size:10px;font-weight:700;padding:3px 12px;border-radius:99px;line-height:1.6;white-space:nowrap">${badgeTxt}</span>
-          </div>
-          <table style="margin-left:auto;font-size:11px;color:rgba(2,26,84,0.6);border-collapse:collapse">
-            <tr><td style="padding:2px 8px 2px 0">Invoice #</td><td style="color:#021A54;font-weight:700">${invNum}</td></tr>
-            <tr><td style="padding:2px 8px 2px 0">Date</td><td style="color:#021A54">${invDate}</td></tr>
-            <tr><td style="padding:2px 8px 2px 0">Due Date</td><td style="color:#021A54">${invDue}</td></tr>
+        <div style="text-align:right">
+          <div class="pac" style="font-size:20px;color:#021A54;line-height:1.1;margin-bottom:4px">Invoice</div>
+          <table style="margin-left:auto;font-size:9px;border-collapse:collapse;color:#021A54">
+            <tr><td style="padding:1px 6px 1px 0;opacity:.55">Status</td><td style="font-weight:800;background:${badgeBg};color:${badgeBg === '#B0D4F1' ? '#021A54' : 'white'};padding:1px 6px;border-radius:3px">${badge.textContent.trim()}</td></tr>
+            <tr><td style="padding:1px 6px 1px 0;opacity:.55">Invoice #</td><td style="font-weight:700">${invNum}</td></tr>
+            <tr><td style="padding:1px 6px 1px 0;opacity:.55">Date</td><td>${invDate}</td></tr>
+            <tr><td style="padding:1px 6px 1px 0;opacity:.55">Due Date</td><td>${invDue}</td></tr>
           </table>
         </div>
       </div>
 
       <!-- Bill To -->
       <div style="padding:12px 24px;border-bottom:1.5px solid #FFCEE3">
-        <div style="display:inline-flex;align-items:center;gap:5px;background:#e8ecf5;color:#021A54;font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:2px 10px;border-radius:99px;margin-bottom:7px">
-          <i class="ph ph-user-circle"></i> Bill To
-        </div>
-        <div style="display:flex;gap:24px;flex-wrap:wrap">
-          <div><div style="font-size:13px;font-weight:700;color:#021A54">${cName}</div><div style="font-size:10.5px;color:#021A54;opacity:.6;margin-top:2px">${cEmail}</div></div>
-        </div>
+        <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:#021A54;background:#e8ecf5;display:table;padding:3px 10px;border-radius:4px;margin-bottom:8px">BILL TO</div>
+        <div style="font-size:13px;font-weight:700;color:#021A54">${cName}</div>
+        <div style="font-size:10.5px;color:#021A54;opacity:.6;margin-top:2px">${cEmail}</div>
       </div>
 
       <!-- Items table -->
       <div style="padding:14px 24px">
-        <div style="display:inline-flex;align-items:center;gap:5px;background:#fff0f7;color:#FF85BB;font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:2px 10px;border-radius:99px;margin-bottom:8px">
-          <i class="ph ph-list-checks"></i> Items
-        </div>
+        <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:#FF85BB;background:#fff0f7;display:table;padding:3px 10px;border-radius:4px;margin-bottom:8px">ITEMS</div>
         <table style="width:100%;border-collapse:collapse">
           <thead>
             <tr style="border-bottom:2.5px solid #021A54">
@@ -1019,28 +1009,30 @@
         </table>
 
         <!-- Totals -->
-        <div style="display:flex;justify-content:flex-end;margin-top:12px">
-          <div style="min-width:280px;max-width:320px;width:100%">
-            <div style="display:flex;justify-content:space-between;gap:16px;font-size:12px;color:#021A54;opacity:.7;padding:4px 0">
-              <span>Subtotal</span><span style="font-weight:600">${subtotal}</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;gap:16px;font-size:12px;color:#FF85BB;padding:4px 0">
-              <span>Discount</span><span style="font-weight:600">${discAmt}</span>
-            </div>
-            <!-- Grand Total box -->
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;background:linear-gradient(135deg,#fff0f7,#FFCEE3);border:2px solid #FF85BB;border-radius:12px;padding:10px 16px;margin-top:8px">
-              <span style="font-size:15px;font-weight:800;letter-spacing:-0.01em;color:#021A54;white-space:nowrap">Grand Total</span>
-              <span style="font-size:18px;font-weight:800;letter-spacing:-0.01em;color:#FF85BB;white-space:nowrap">${grandTot}</span>
-            </div>
-          </div>
-        </div>
+        <table style="margin-left:auto;margin-top:12px;border-collapse:collapse;min-width:260px">
+          <tr>
+            <td style="font-size:12px;color:#021A54;opacity:.7;padding:4px 16px 4px 0">Subtotal</td>
+            <td style="font-size:12px;font-weight:600;color:#021A54;text-align:right;padding:4px 0">${subtotal}</td>
+          </tr>
+          <tr>
+            <td style="font-size:12px;color:#FF85BB;padding:4px 16px 4px 0">Discount</td>
+            <td style="font-size:12px;font-weight:600;color:#FF85BB;text-align:right;padding:4px 0">${discAmt}</td>
+          </tr>
+          <tr>
+            <td colspan="2" style="padding-top:6px">
+              <table style="width:100%;border-collapse:collapse;background:#FFCEE3;border:2px solid #FF85BB;border-radius:8px">
+                <tr>
+                  <td style="font-size:14px;font-weight:800;color:#021A54;padding:10px 14px">Grand Total</td>
+                  <td style="font-size:17px;font-weight:800;color:#FF85BB;text-align:right;padding:10px 14px">${grandTot}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
       </div>
 
       <!-- Notes -->
       <div style="border-top:1.5px solid #FFCEE3;padding:12px 24px">
-        <div style="display:inline-flex;align-items:center;gap:5px;background:#faefd8;color:#b07a20;font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:2px 10px;border-radius:99px;margin-bottom:6px">
-          <i class="ph ph-note-pencil"></i> Notes
-        </div>
         <div style="font-size:10.5px;color:#021A54;opacity:.75;line-height:1.5;white-space:pre-line">${notes || 'Thanks for shopping with Kuphoria! 🩵'}</div>
       </div>
 
