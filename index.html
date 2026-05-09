@@ -33,10 +33,10 @@
   </script>
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Pacifico&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Pacifico&family=Noto+Sans+Myanmar:wght@400;700&family=Noto+Sans:wght@400;700&display=swap');
 
     *, *::before, *::after { box-sizing: border-box; }
-    * { font-family: 'Nunito', sans-serif; -webkit-tap-highlight-color: transparent; }
+    * { font-family: 'Nunito', 'Noto Sans Myanmar', 'Noto Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
     .serif { font-family: 'Pacifico', cursive; }
 
     html { scroll-behavior: smooth; }
@@ -350,20 +350,20 @@
           </span>
         </div>
 
-        <!-- Invoice # + dates: 3 columns, full width -->
-        <div class="grid grid-cols-3 gap-2">
-          <div class="fl">
+        <!-- Invoice # + dates: responsive grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <div class="fl col-span-2 sm:col-span-1">
             <input id="inv-num" type="text" placeholder=" " value="#001"
                    class="inp-navy inp-sm text-right" style="width:100%" />
             <label class="right-2 left-auto" style="font-size:9px"><i class="ph ph-hash"></i> No.</label>
           </div>
           <div class="fl">
             <input id="inv-date" type="date" class="inp-navy inp-sm" style="width:100%;padding-right:6px" />
-            <label style="font-size:9px"><i class="ph ph-calendar-blank"></i> Date</label>
+            <label style="font-size:9px">Date</label>
           </div>
           <div class="fl">
             <input id="inv-due" type="date" class="inp-navy inp-sm" style="width:100%;padding-right:6px" />
-            <label style="font-size:9px"><i class="ph ph-calendar-check"></i> Due</label>
+            <label style="font-size:9px">Due</label>
           </div>
         </div>
       </div>
@@ -443,9 +443,9 @@
 
     <!-- ─── NOTES & PAYMENT ─── -->
     <div id="bottom-row" class="grid grid-cols-1 gap-3">
-      <div class="glass rounded-3xl p-4" style="box-shadow:0 4px 16px rgba(2,26,84,0.06)">
-        <textarea id="notes" rows="3" placeholder="Thanks for shopping with Kuphoria! 🩵"
-                  class="w-full rounded-2xl px-4 py-3 resize-none focus:outline-none transition leading-snug"
+      <div class="glass rounded-2xl px-3 py-2" style="box-shadow:0 4px 16px rgba(2,26,84,0.06)">
+        <textarea id="notes" rows="2" placeholder="Thanks for shopping with Kuphoria! 🩵"
+                  class="w-full rounded-xl px-3 py-2 resize-none focus:outline-none transition leading-snug"
                   style="background:rgba(245,245,245,0.6); border:1.5px solid #FFCEE3; color:#021A54; font-size:16px !important">Thanks for shopping with Kuphoria! 🩵</textarea>
       </div>
     </div>
@@ -551,6 +551,7 @@
   /* ── Currency ── */
   const fmt   = n => Math.max(0, n).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' MMK';
   const parse = s => parseFloat(String(s).replace(/[,\s]/g, '').replace('MMK','')) || 0;
+  const smallMMK = (v, sz='0.65em') => String(v).replace(' MMK', `<span style="font-size:${sz};font-weight:700;opacity:.7"> MMK</span>`);
 
   /* ── Item Rows ── */
   let rowCount = 0;
@@ -778,7 +779,7 @@
   /* ══════════════════════════════════
      SAVE AS PNG
   ══════════════════════════════════ */
-  async function savePNG() {
+  function savePNG() {
     const btns = document.querySelectorAll('[onclick="savePNG()"]');
     const originals = [];
     btns.forEach(b => {
@@ -787,58 +788,211 @@
       b.disabled = true;
     });
 
-    const modal = document.getElementById('preview-modal');
-    const previewBody = document.getElementById('preview-body');
-    let dataURL = null;
+    const restore = () => btns.forEach((b, i) => { b.innerHTML = originals[i]; b.disabled = false; });
 
-    // Render invoice into preview modal, invisible but fully laid out
-    previewBody.innerHTML = buildPreviewHTML();
-    modal.style.visibility = 'hidden';
-    modal.classList.remove('hidden');
+    // Open a clean window — same pattern as printInvoice()
+    // No Tailwind, no global CSS — only our inline styles render
+    const content = buildPNGHTML();
+    const win = window.open('', '_blank', 'width=760,height=200');
+    if (!win) { alert('Please allow popups for this page to save PNG.'); restore(); return; }
 
-    try {
-      // Let browser fully render (fonts + icons already loaded in main page)
-      await document.fonts.ready;
-      await new Promise(r => setTimeout(r, 300));
-
-      const card = previewBody.querySelector('.pv') || previewBody;
-
-      // html2canvas reads actual rendered pixels — no external fetches needed
-      const canvas = await html2canvas(card, {
+    const sc = 'script';
+    win.document.write(`<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&family=Noto+Sans+Myanmar:wght@400;700&family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet"/>
+<${sc} src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></${sc}>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:#f0f0f0;padding:0;font-family:'Nunito','Noto Sans Myanmar','Noto Sans',sans-serif}
+</style>
+</head>
+<body>
+${content}
+<${sc}>
+  document.fonts.ready.then(function() {
+    setTimeout(function() {
+      var card = document.querySelector('.png-card');
+      html2canvas(card, {
         scale: 2,
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#ffffff',
-        logging: false,
-        onclone: (doc) => {
-          // Make sure cloned element is visible for capture
-          const el = doc.querySelector('.pv') || doc.body;
-          el.style.visibility = 'visible';
-        }
+        logging: false
+      }).then(function(canvas) {
+        var dataURL = canvas.toDataURL('image/png');
+        window.opener.postMessage({ type: 'png-ready', dataURL: dataURL }, '*');
+        window.close();
+      }).catch(function(e) {
+        window.opener.postMessage({ type: 'png-error', msg: String(e) }, '*');
+        window.close();
       });
+    }, 700);
+  });
+</${sc}>
+</body>
+</html>`);
+    win.document.close();
 
-      dataURL = canvas.toDataURL('image/png');
-
-    } catch (err) {
-      console.error('[PNG]', err);
-      alert('Could not generate PNG — please try again.');
-    } finally {
-      modal.classList.add('hidden');
-      modal.style.visibility = '';
-      btns.forEach((b, i) => { b.innerHTML = originals[i]; b.disabled = false; });
-    }
-
-    if (!dataURL) return;
-
-    const invNum  = (val('inv-num') || 'invoice').replace(/[^a-z0-9]/gi, '-').toLowerCase();
-    const filename = `invoice-${invNum}.png`;
-
-    [document.getElementById('png-download-btn'), document.getElementById('png-download-mobile')].forEach(a => {
-      if (a) { a.href = dataURL; a.download = filename; }
+    // Listen for the result
+    window.addEventListener('message', function handler(e) {
+      if (e.data && e.data.type === 'png-ready') {
+        window.removeEventListener('message', handler);
+        restore();
+        const dataURL  = e.data.dataURL;
+        const invNum   = (val('inv-num') || 'invoice').replace(/[^a-z0-9]/gi, '-').toLowerCase();
+        const filename = 'invoice-' + invNum + '.png';
+        [document.getElementById('png-download-btn'), document.getElementById('png-download-mobile')].forEach(function(a) {
+          if (a) { a.href = dataURL; a.download = filename; }
+        });
+        document.getElementById('png-result').src = dataURL;
+        document.getElementById('png-modal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+      if (e.data && e.data.type === 'png-error') {
+        window.removeEventListener('message', handler);
+        restore();
+        alert('Could not generate PNG: ' + e.data.msg);
+      }
     });
-    document.getElementById('png-result').src = dataURL;
-    document.getElementById('png-modal').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
+  }
+
+  /* ── PNG-specific HTML builder (table-only, no flex, no overflow:hidden) ── */
+  function buildPNGHTML() {
+    const bizName    = val('biz-name')    || 'Your Business';
+    const bizAddr    = val('biz-address') || '';
+    const invNum     = val('inv-num')     || '#001';
+    const invDate    = fmtDate(val('inv-date'));
+    const invDue     = fmtDate(val('inv-due'));
+    const cName      = val('client-name') || '—';
+    const cEmail     = val('client-email')|| '';
+    const notes      = val('notes')       || '';
+
+    const logoHidden = document.getElementById('logo-preview').classList.contains('hidden');
+    const logoSrc    = document.getElementById('logo-preview').src;
+
+    const badge      = document.getElementById('status-badge');
+    const badgeBg    = badge.style.background || '#FF85BB';
+    const badgeTxt   = badge.textContent.trim().replace(/\s+/g, ' ');
+    const badgeColor = badgeBg === '#B0D4F1' ? '#021A54' : 'white';
+
+    let itemRowsHTML = '';
+    let rowIdx = 0;
+    document.querySelectorAll('#item-rows > div[id^="row-"]').forEach(row => {
+      rowIdx++;
+      const descEl  = row.querySelector('input[placeholder*="description"]');
+      const qtyEl   = row.querySelector('[id$="-qty"]') || row.querySelector('[id$="-qty-m"]');
+      const priceEl = row.querySelector('[id$="-price-d"]') || row.querySelector('[id$="-price-m"]');
+      const totalEl = row.querySelector('[id$="-total"]:not([id$="-total-m"])');
+      const desc  = descEl?.value  || '';
+      const qty   = qtyEl?.value   || '0';
+      const price = parseInt(priceEl?.value || '0').toLocaleString();
+      const total = totalEl?.textContent || '0 MMK';
+      const rowBg = rowIdx % 2 === 0 ? '#FFF5F9' : '#ffffff';
+      itemRowsHTML += `
+        <tr style="background:${rowBg}">
+          <td style="padding:9px 12px;font-size:13px;color:#021A54;border-bottom:1px solid #FFCEE3;word-break:break-word">${desc || '&mdash;'}</td>
+          <td style="padding:9px 12px;font-size:13px;color:#021A54;text-align:center;border-bottom:1px solid #FFCEE3;white-space:nowrap">${qty}</td>
+          <td style="padding:9px 12px;font-size:13px;color:#021A54;text-align:right;border-bottom:1px solid #FFCEE3;white-space:nowrap">${price}</td>
+          <td style="padding:9px 12px;font-size:13px;color:#FF85BB;text-align:right;font-weight:700;border-bottom:1px solid #FFCEE3;white-space:nowrap">${smallMMK(total)}</td>
+        </tr>`;
+    });
+
+    const subtotal = document.getElementById('subtotal').textContent;
+    const discAmt  = document.getElementById('discount-amount').textContent;
+    const grandTot = document.getElementById('grand-total').textContent;
+
+    const addrHtml = bizAddr.replace(/\n/g,'<br>');
+
+    return `
+    <div class="png-card" style="width:700px;background:#ffffff;font-family:'Nunito','Noto Sans Myanmar','Noto Sans',sans-serif">
+
+      <!-- HEADER: full table layout, no flex -->
+      <table style="width:100%;border-collapse:collapse;background:#B0D4F1">
+        <tr>
+          <!-- Bill To (left) -->
+          <td style="padding:14px 20px;vertical-align:top">
+            <div style="font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#021A54;opacity:.5;margin-bottom:4px;line-height:1">Bill To</div>
+            <div style="font-size:13px;font-weight:700;color:#021A54;line-height:1.2">${cName}</div>
+            ${cEmail ? `<div style="font-size:10px;color:rgba(2,26,84,0.6);margin-top:3px">${cEmail}</div>` : ''}
+          </td>
+          <!-- Business (middle) -->
+          <td style="padding:14px 16px;vertical-align:top;text-align:center">
+            ${!logoHidden && logoSrc ? `<img src="${logoSrc}" style="width:40px;height:40px;border-radius:6px;object-fit:contain;display:block;margin:0 auto 5px" />` : ''}
+            <div style="font-size:14px;font-weight:800;color:#021A54;line-height:1.25">${bizName}</div>
+            <div style="font-size:10px;color:rgba(2,26,84,0.6);margin-top:3px;line-height:1.55">${addrHtml || '&nbsp;'}</div>
+          </td>
+          <!-- Invoice (right) -->
+          <td style="padding:14px 20px;vertical-align:top;text-align:right">
+            <table style="margin-left:auto;border-collapse:collapse;color:#021A54">
+              <tr>
+                <td colspan="2" style="font-size:24px;font-weight:900;color:#021A54;font-family:'Pacifico',cursive,Arial;text-align:right;padding-bottom:18px;line-height:1">Invoice</td>
+              </tr>
+              <tr>
+                <td style="font-size:10px;padding:2px 10px 2px 0;opacity:.6;white-space:nowrap">Status</td>
+                <td style="font-size:10px;background:${badgeBg};color:${badgeColor};padding:3px 10px;font-weight:700;white-space:nowrap;line-height:1;text-align:center;vertical-align:middle">${badgeTxt}</td>
+              </tr>
+              <tr>
+                <td style="font-size:10px;padding:2px 10px 2px 0;opacity:.6;white-space:nowrap">Invoice #</td>
+                <td style="font-size:10px;font-weight:700;white-space:nowrap">${invNum}</td>
+              </tr>
+              <tr>
+                <td style="font-size:10px;padding:2px 10px 2px 0;opacity:.6;white-space:nowrap">Date</td>
+                <td style="font-size:10px;white-space:nowrap">${invDate}</td>
+              </tr>
+              <tr>
+                <td style="font-size:10px;padding:2px 10px 2px 0;opacity:.6;white-space:nowrap">Due</td>
+                <td style="font-size:10px;white-space:nowrap">${invDue}</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+
+      <!-- ITEMS -->
+      <div style="padding:14px 22px">
+        <table style="width:100%;border-collapse:collapse">
+          <thead>
+            <tr style="border-bottom:2px solid #021A54">
+              <th style="padding:8px 12px 10px 12px;font-size:11px;font-weight:800;color:#021A54;text-align:left;text-transform:uppercase;letter-spacing:.07em">Description</th>
+              <th style="padding:8px 12px 10px 12px;font-size:11px;font-weight:800;color:#021A54;text-align:center;text-transform:uppercase;letter-spacing:.07em;white-space:nowrap">Qty</th>
+              <th style="padding:8px 12px 10px 12px;font-size:11px;font-weight:800;color:#021A54;text-align:right;text-transform:uppercase;letter-spacing:.07em;white-space:nowrap">Unit Price</th>
+              <th style="padding:8px 12px 10px 12px;font-size:11px;font-weight:800;color:#021A54;text-align:right;text-transform:uppercase;letter-spacing:.07em;white-space:nowrap">Total</th>
+            </tr>
+          </thead>
+          <tbody>${itemRowsHTML}</tbody>
+        </table>
+
+        <!-- Totals -->
+        <table style="margin-left:auto;margin-top:14px;border-collapse:collapse;min-width:280px">
+          <tr>
+            <td style="font-size:12px;color:#021A54;opacity:.7;padding:5px 0">Subtotal</td>
+            <td style="font-size:12px;font-weight:600;color:#021A54;text-align:right;padding:5px 0;white-space:nowrap">${smallMMK(subtotal)}</td>
+          </tr>
+          <tr>
+            <td style="font-size:12px;color:#FF85BB;padding:5px 0">Discount</td>
+            <td style="font-size:12px;font-weight:600;color:#FF85BB;text-align:right;padding:5px 0;white-space:nowrap">${smallMMK(discAmt)}</td>
+          </tr>
+          <tr>
+            <td colspan="2" style="padding-top:10px">
+              <table style="width:100%;border-collapse:separate;border-spacing:0;background:#FFCEE3;border:2px solid #FF85BB;border-radius:10px">
+                <tr>
+                  <td style="font-size:14px;font-weight:800;color:#021A54;padding:11px 16px;border-radius:10px 0 0 10px">Grand Total</td>
+                  <td style="font-size:18px;font-weight:800;color:#FF85BB;text-align:right;padding:11px 16px;white-space:nowrap;border-radius:0 10px 10px 0">${smallMMK(grandTot,'11px')}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      ${notes ? `<!-- NOTES -->
+      <div style="border-top:1.5px solid #FFCEE3;padding:12px 22px;text-align:center">
+        <div style="font-size:11px;color:rgba(2,26,84,0.7);line-height:1.7">${notes}</div>
+      </div>` : ''}
+
+    </div>`;
   }
 
   function closePNG() {
@@ -886,13 +1040,13 @@
   <meta name="viewport" content="width=794"/>
   <title>Invoice ${val('inv-num') || ''}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Pacifico&family=Noto+Sans+Myanmar:wght@400;700&family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet"/>
   <${s} src="https://unpkg.com/@phosphor-icons/web@2.1.1"></${s}>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       background: white;
-      font-family: 'Nunito', sans-serif;
+      font-family: 'Nunito', 'Noto Sans Myanmar', 'Noto Sans', sans-serif;
       width: 794px;          /* A4 width at 96 dpi */
       padding: 20px 24px;
     }
@@ -951,7 +1105,7 @@
           <td style="padding:9px 10px;font-size:12px;color:#021A54">${desc || '<span style="opacity:.3">—</span>'}</td>
           <td style="padding:9px 10px;font-size:12px;color:#021A54;text-align:center">${qty}</td>
           <td style="padding:9px 10px;font-size:12px;color:#021A54;text-align:right">${price}</td>
-          <td style="padding:9px 10px;font-size:12px;color:#FF85BB;text-align:right;font-weight:700">${total}</td>
+          <td style="padding:9px 10px;font-size:12px;color:#FF85BB;text-align:right;font-weight:700">${smallMMK(total)}</td>
         </tr>`;
     });
 
@@ -966,16 +1120,24 @@
     </style>
     <div class="pv" style="background:white;border-radius:14px;overflow:hidden;box-shadow:0 8px 40px rgba(2,26,84,0.18);max-width:700px;margin:0 auto">
 
-      <!-- Header -->
-      <div style="background:#B0D4F1;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
-        <div style="display:flex;align-items:center;gap:10px;flex:1">
-          ${!logoHidden && logoSrc ? `<img src="${logoSrc}" style="width:36px;height:36px;border-radius:8px;object-fit:contain;border:1px solid rgba(147,197,253,0.6);flex-shrink:0" />` : ''}
-          <div>
+      <!-- Header (3-column: bill to | business | invoice) -->
+      <div style="background:#B0D4F1;padding:10px 16px;display:flex;align-items:center;gap:12px">
+        <!-- Bill To -->
+        <div style="flex:1;min-width:0">
+          <div style="font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#021A54;opacity:.5;margin-bottom:3px">Bill To</div>
+          <div style="font-size:12px;font-weight:700;color:#021A54;line-height:1.2">${cName}</div>
+          <div style="font-size:9px;color:rgba(2,26,84,0.6);margin-top:2px">${cEmail}</div>
+        </div>
+        <!-- Business -->
+        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;flex:1;min-width:0;padding:0 14px">
+          ${!logoHidden && logoSrc ? `<img src="${logoSrc}" style="width:36px;height:36px;border-radius:8px;object-fit:contain;border:1px solid rgba(147,197,253,0.6);margin-bottom:4px" />` : ''}
+          <div style="min-width:0">
             <div style="font-size:13px;font-weight:800;color:#021A54;line-height:1.2">${bizName}</div>
             <div style="font-size:9px;color:rgba(2,26,84,0.6);margin-top:2px;white-space:pre-line;line-height:1.4">${bizAddress}</div>
           </div>
         </div>
-        <div style="text-align:right">
+        <!-- Invoice -->
+        <div style="text-align:right;flex-shrink:0">
           <div class="pac" style="font-size:20px;color:#021A54;line-height:1.1;margin-bottom:4px">Invoice</div>
           <table style="margin-left:auto;font-size:9px;border-collapse:collapse;color:#021A54">
             <tr><td style="padding:1px 6px 1px 0;opacity:.55">Status</td><td style="font-weight:800;background:${badgeBg};color:${badgeBg === '#B0D4F1' ? '#021A54' : 'white'};padding:1px 6px;border-radius:3px">${badge.textContent.trim()}</td></tr>
@@ -986,16 +1148,8 @@
         </div>
       </div>
 
-      <!-- Bill To -->
-      <div style="padding:12px 24px;border-bottom:1.5px solid #FFCEE3">
-        <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:#021A54;background:#e8ecf5;display:table;padding:3px 10px;border-radius:4px;margin-bottom:8px">BILL TO</div>
-        <div style="font-size:13px;font-weight:700;color:#021A54">${cName}</div>
-        <div style="font-size:10.5px;color:#021A54;opacity:.6;margin-top:2px">${cEmail}</div>
-      </div>
-
       <!-- Items table -->
       <div style="padding:14px 24px">
-        <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:#FF85BB;background:#fff0f7;display:table;padding:3px 10px;border-radius:4px;margin-bottom:8px">ITEMS</div>
         <table style="width:100%;border-collapse:collapse">
           <thead>
             <tr style="border-bottom:2.5px solid #021A54">
@@ -1012,18 +1166,18 @@
         <table style="margin-left:auto;margin-top:12px;border-collapse:collapse;min-width:260px">
           <tr>
             <td style="font-size:12px;color:#021A54;opacity:.7;padding:4px 16px 4px 0">Subtotal</td>
-            <td style="font-size:12px;font-weight:600;color:#021A54;text-align:right;padding:4px 0">${subtotal}</td>
+            <td style="font-size:12px;font-weight:600;color:#021A54;text-align:right;padding:4px 0">${smallMMK(subtotal)}</td>
           </tr>
           <tr>
             <td style="font-size:12px;color:#FF85BB;padding:4px 16px 4px 0">Discount</td>
-            <td style="font-size:12px;font-weight:600;color:#FF85BB;text-align:right;padding:4px 0">${discAmt}</td>
+            <td style="font-size:12px;font-weight:600;color:#FF85BB;text-align:right;padding:4px 0">${smallMMK(discAmt)}</td>
           </tr>
           <tr>
             <td colspan="2" style="padding-top:6px">
-              <table style="width:100%;border-collapse:collapse;background:#FFCEE3;border:2px solid #FF85BB;border-radius:8px">
+              <table style="width:100%;border-collapse:separate;border-spacing:0;background:#FFCEE3;border:2px solid #FF85BB;border-radius:10px">
                 <tr>
-                  <td style="font-size:14px;font-weight:800;color:#021A54;padding:10px 14px">Grand Total</td>
-                  <td style="font-size:17px;font-weight:800;color:#FF85BB;text-align:right;padding:10px 14px">${grandTot}</td>
+                  <td style="font-size:14px;font-weight:800;color:#021A54;padding:10px 14px;border-radius:10px 0 0 10px">Grand Total</td>
+                  <td style="font-size:17px;font-weight:800;color:#FF85BB;text-align:right;padding:10px 14px;border-radius:0 10px 10px 0">${smallMMK(grandTot,'10px')}</td>
                 </tr>
               </table>
             </td>
@@ -1032,7 +1186,7 @@
       </div>
 
       <!-- Notes -->
-      <div style="border-top:1.5px solid #FFCEE3;padding:12px 24px">
+      <div style="border-top:1.5px solid #FFCEE3;padding:12px 24px;text-align:center">
         <div style="font-size:10.5px;color:#021A54;opacity:.75;line-height:1.5;white-space:pre-line">${notes || 'Thanks for shopping with Kuphoria! 🩵'}</div>
       </div>
 
