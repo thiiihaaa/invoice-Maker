@@ -57,6 +57,17 @@
     input[type=number]::-webkit-inner-spin-button,
     input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
 
+    /* Force iOS to respect CSS width on date inputs */
+    input[type="date"] {
+      -webkit-appearance: none;
+      appearance: none;
+      display: block;
+    }
+    input[type="date"]::-webkit-date-and-time-value {
+      text-align: left;
+      min-height: 1.5em;
+    }
+
     /* Base input styles */
     .inp {
       width: 100%; background: rgba(255,255,255,0.75);
