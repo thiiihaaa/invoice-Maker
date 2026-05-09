@@ -133,6 +133,8 @@
       font-size: 11px; font-weight: 700;
       letter-spacing: 0.1em; text-transform: uppercase;
       padding: 4px 12px; border-radius: 99px; margin-bottom: 12px;
+      cursor: pointer; user-select: none; -webkit-user-select: none;
+      width: 100%;
     }
     .sec-label i { font-size: 13px; }
 
@@ -175,6 +177,28 @@
     /* Scrollbar */
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-thumb { background: #FFCEE3; border-radius: 99px; }
+
+    /* ── Collapsible sections ── */
+    .sec-caret {
+      margin-left: auto;
+      font-size: 14px;
+      opacity: .5;
+      transition: transform .25s ease;
+      display: inline-block;
+    }
+    .sec-label[data-collapsed="true"] .sec-caret {
+      transform: rotate(-90deg);
+    }
+    .sec-content {
+      overflow: hidden;
+      max-height: 2000px;
+      opacity: 1;
+      transition: max-height .32s ease, opacity .22s ease;
+    }
+    .sec-content[data-collapsed="true"] {
+      max-height: 0 !important;
+      opacity: 0;
+    }
 
     /* ══════════════════════════════════
        PRINT  —  Cute but Professional
@@ -391,26 +415,31 @@
 
     <!-- ─── BILL TO ─── -->
     <div id="card-billto" class="glass rounded-3xl p-4 sm:p-5" style="box-shadow:0 4px 20px rgba(2,26,84,0.07)">
-      <div class="sec-label" style="background:#e8ecf5; color:#021A54">
+      <div class="sec-label mb-3" style="background:#e8ecf5; color:#021A54" data-collapsed="true" onclick="toggleSection(this,'billto-content')">
         <i class="ph ph-user-circle"></i> Bill To
+        <i class="ph ph-caret-down sec-caret"></i>
       </div>
-      <div id="billto-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-        <div>
-          <label class="lbl"><i class="ph ph-user"></i> Client Name</label>
-          <input id="client-name" type="text" placeholder="Client name" class="inp-navy inp-flat" />
-        </div>
-        <div>
-          <label class="lbl"><i class="ph ph-phone"></i> Phone Number</label>
-          <input id="client-email" type="tel" placeholder="09xxxxxxxx" class="inp-navy inp-flat" />
+      <div id="billto-content" class="sec-content" data-collapsed="true">
+        <div id="billto-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div>
+            <label class="lbl"><i class="ph ph-user"></i> Client Name</label>
+            <input id="client-name" type="text" placeholder="Client name" class="inp-navy inp-flat" />
+          </div>
+          <div>
+            <label class="lbl"><i class="ph ph-phone"></i> Phone Number</label>
+            <input id="client-email" type="tel" placeholder="09xxxxxxxx" class="inp-navy inp-flat" />
+          </div>
         </div>
       </div>
     </div>
 
     <!-- ─── ITEMS ─── -->
     <div id="card-items" class="glass rounded-3xl p-4 sm:p-5" style="box-shadow:0 4px 24px rgba(255,133,187,0.12)">
-      <div class="sec-label" style="background:#fff0f7; color:#FF85BB">
+      <div class="sec-label mb-3" style="background:#fff0f7; color:#FF85BB" data-collapsed="true" onclick="toggleSection(this,'items-content')">
         <i class="ph ph-list-checks"></i> Items
+        <i class="ph ph-caret-down sec-caret"></i>
       </div>
+      <div id="items-content" class="sec-content" data-collapsed="true">
 
       <!-- Desktop table header (hidden on mobile) -->
       <div class="hidden sm:grid grid-cols-12 gap-2 mb-2 px-1">
@@ -458,15 +487,23 @@
           </span>
           <span id="grand-total" class="grand-value text-2xl font-extrabold tracking-tight" style="color:#FF85BB">0 MMK</span>
         </div>
-      </div>
-    </div>
+      </div><!-- /totals-block -->
+      </div><!-- /items-content -->
+    </div><!-- /card-items -->
 
     <!-- ─── NOTES & PAYMENT ─── -->
     <div id="bottom-row" class="grid grid-cols-1 gap-3">
       <div class="glass rounded-2xl px-3 py-2" style="box-shadow:0 4px 16px rgba(2,26,84,0.06)">
-        <textarea id="notes" rows="2" placeholder="Thanks for shopping with Kuphoria! 🩵"
-                  class="w-full rounded-xl px-3 py-2 resize-none focus:outline-none transition leading-snug"
-                  style="background:rgba(245,245,245,0.6); border:1.5px solid #FFCEE3; color:#021A54; font-size:16px !important">Thanks for shopping with Kuphoria! 🩵</textarea>
+        <div class="sec-label mb-2" style="background:transparent; color:#021A54; padding:0" data-collapsed="true" onclick="toggleSection(this,'notes-content')">
+          <i class="ph ph-note-pencil" style="font-size:13px"></i>
+          <span style="font-size:11px;font-weight:700;opacity:.5;margin-left:4px">Notes</span>
+          <i class="ph ph-caret-down sec-caret"></i>
+        </div>
+        <div id="notes-content" class="sec-content" data-collapsed="true">
+          <textarea id="notes" rows="2" placeholder="Thanks for shopping with Kuphoria! 🩵"
+                    class="w-full rounded-xl px-3 py-2 resize-none focus:outline-none transition leading-snug"
+                    style="background:rgba(245,245,245,0.6); border:1.5px solid #FFCEE3; color:#021A54; font-size:16px !important">Thanks for shopping with Kuphoria! 🩵</textarea>
+        </div>
       </div>
     </div>
 
@@ -555,6 +592,15 @@
   </div>
 
 <script>
+  /* ── Accordion ── */
+  function toggleSection(labelEl, contentId) {
+    const content = document.getElementById(contentId);
+    if (!content) return;
+    const collapsed = content.getAttribute('data-collapsed') === 'true';
+    content.setAttribute('data-collapsed', String(!collapsed));
+    labelEl.setAttribute('data-collapsed', String(!collapsed));
+  }
+
   /* ── Logo ── */
   function previewLogo(input) {
     if (!input.files?.[0]) return;
