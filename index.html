@@ -99,6 +99,17 @@
     }
     .fl textarea { padding-top: 26px !important; resize: none; }
 
+    /* Static above-label */
+    .lbl {
+      display: flex; align-items: center; gap: 4px;
+      font-size: 11px; font-weight: 700;
+      color: #021A54; opacity: .5;
+      margin-bottom: 5px;
+    }
+    .lbl i { font-size: 13px; }
+    .inp-flat { padding: 10px 12px !important; }
+    .inp-flat-ta { padding: 10px 12px !important; resize: none; }
+
     /* touch-friendly text inputs (small variant) */
     .inp-sm { padding: 10px 12px 4px; border-radius: 10px; font-size: 16px !important; }
     .fl .inp-sm ~ label { font-size: 12px; left: 12px; }
@@ -199,9 +210,7 @@
         padding: 10px 10px 2px !important;
         border-radius: 6px !important;
       }
-      #card-header .fl label { color: rgba(2,26,84,0.45) !important; font-size: 0.48rem !important; }
-      #card-header .fl input:not(:placeholder-shown) ~ label { color: #FF85BB !important; }
-      #card-header .fl textarea:not(:placeholder-shown) ~ label { color: #FF85BB !important; }
+      #card-header .lbl { color: rgba(2,26,84,0.45) !important; font-size: 0.48rem !important; margin-bottom:2px !important; }
 
       /* Invoice title dark on pale blue */
       #card-header .serif { color: #021A54 !important; font-size: 1.55rem !important; }
@@ -324,13 +333,13 @@
 
         <!-- Business Name + Address -->
         <div class="flex-1 space-y-2">
-          <div class="fl">
-            <input id="biz-name" type="text" placeholder=" " class="inp" style="font-weight:600" />
-            <label><i class="ph ph-storefront"></i> Business Name</label>
+          <div>
+            <label class="lbl"><i class="ph ph-storefront"></i> Business Name</label>
+            <input id="biz-name" type="text" placeholder="Your business name" class="inp inp-flat" style="font-weight:600" />
           </div>
-          <div class="fl">
-            <textarea id="biz-address" rows="2" placeholder=" " class="inp"></textarea>
-            <label><i class="ph ph-map-pin"></i> Address · Email · Phone</label>
+          <div>
+            <label class="lbl"><i class="ph ph-map-pin"></i> Address · Email · Phone</label>
+            <textarea id="biz-address" rows="2" placeholder="123 Street, City · email@example.com" class="inp inp-flat-ta"></textarea>
           </div>
         </div>
       </div>
@@ -351,19 +360,19 @@
         </div>
 
         <!-- Invoice # + dates: responsive grid -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-          <div class="fl col-span-2 sm:col-span-1">
-            <input id="inv-num" type="text" placeholder=" " value="#001"
-                   class="inp-navy inp-sm text-right" style="width:100%" />
-            <label class="right-2 left-auto" style="font-size:9px"><i class="ph ph-hash"></i> No.</label>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div>
+            <label class="lbl"><i class="ph ph-hash"></i> Invoice No.</label>
+            <input id="inv-num" type="text" placeholder="#001" value="#001"
+                   class="inp-navy inp-flat text-right" style="width:100%" />
           </div>
-          <div class="fl">
-            <input id="inv-date" type="date" class="inp-navy inp-sm" style="width:100%;padding-right:6px" />
-            <label style="font-size:9px">Date</label>
+          <div>
+            <label class="lbl"><i class="ph ph-calendar-blank"></i> Date</label>
+            <input id="inv-date" type="date" class="inp-navy inp-flat" style="width:100%;padding-right:6px" />
           </div>
-          <div class="fl">
-            <input id="inv-due" type="date" class="inp-navy inp-sm" style="width:100%;padding-right:6px" />
-            <label style="font-size:9px">Due</label>
+          <div>
+            <label class="lbl"><i class="ph ph-calendar-check"></i> Due</label>
+            <input id="inv-due" type="date" class="inp-navy inp-flat" style="width:100%;padding-right:6px" />
           </div>
         </div>
       </div>
@@ -375,13 +384,13 @@
         <i class="ph ph-user-circle"></i> Bill To
       </div>
       <div id="billto-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-        <div class="fl">
-          <input id="client-name" type="text" placeholder=" " class="inp-navy" />
-          <label><i class="ph ph-user"></i> Client Name</label>
+        <div>
+          <label class="lbl"><i class="ph ph-user"></i> Client Name</label>
+          <input id="client-name" type="text" placeholder="Client name" class="inp-navy inp-flat" />
         </div>
-        <div class="fl">
-          <input id="client-email" type="tel" placeholder=" " class="inp-navy" />
-          <label><i class="ph ph-phone"></i> Phone Number</label>
+        <div>
+          <label class="lbl"><i class="ph ph-phone"></i> Phone Number</label>
+          <input id="client-email" type="tel" placeholder="09xxxxxxxx" class="inp-navy inp-flat" />
         </div>
       </div>
     </div>
@@ -793,7 +802,7 @@
     // Open a clean window — same pattern as printInvoice()
     // No Tailwind, no global CSS — only our inline styles render
     const content = buildPNGHTML();
-    const win = window.open('', '_blank', 'width=760,height=200');
+    const win = window.open('', '_blank', 'width=840,height=300');
     if (!win) { alert('Please allow popups for this page to save PNG.'); restore(); return; }
 
     const sc = 'script';
@@ -906,7 +915,7 @@ ${content}
     const addrHtml = bizAddr.replace(/\n/g,'<br>');
 
     return `
-    <div class="png-card" style="width:700px;background:#ffffff;font-family:'Nunito','Noto Sans Myanmar','Myanmar Text',sans-serif">
+    <div class="png-card" style="width:794px;min-height:1123px;background:#ffffff;font-family:'Nunito','Noto Sans Myanmar','Myanmar Text',sans-serif">
 
       <!-- HEADER: full table layout, no flex -->
       <table style="width:100%;border-collapse:collapse;background:#B0D4F1">
