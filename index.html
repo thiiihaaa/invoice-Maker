@@ -311,7 +311,7 @@
   <div id="app" class="max-w-2xl mx-auto px-3 pt-4 sm:px-6 sm:pt-6 space-y-3">
 
     <!-- ─── HEADER ─── -->
-    <div id="card-header" class="glass rounded-3xl p-4 sm:p-5" style="box-shadow:0 4px 24px rgba(255,133,187,0.15)">
+    <div id="card-header" class="glass rounded-3xl p-4 sm:p-5" style="box-shadow:0 4px 24px rgba(255,133,187,0.15);overflow:hidden">
 
       <!-- Row 1: Logo + Business info -->
       <div class="flex gap-3 mb-3">
@@ -359,20 +359,20 @@
           </span>
         </div>
 
-        <!-- Invoice # + dates: 3 equal columns always -->
-        <div class="grid grid-cols-3 gap-1" style="overflow:hidden">
-          <div style="min-width:0">
-            <label class="lbl"><i class="ph ph-hash"></i> No.</label>
+        <!-- Invoice # + dates -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div>
+            <label class="lbl"><i class="ph ph-hash"></i> Invoice No.</label>
             <input id="inv-num" type="text" placeholder="#001" value="#001"
                    class="inp-navy inp-flat text-right" style="width:100%;max-width:100%" />
           </div>
-          <div style="min-width:0">
+          <div>
             <label class="lbl"><i class="ph ph-calendar-blank"></i> Date</label>
-            <input id="inv-date" type="date" class="inp-navy inp-flat" style="width:100%;max-width:100%;padding-left:6px;padding-right:2px" />
+            <input id="inv-date" type="date" class="inp-navy inp-flat" style="width:100%;max-width:100%" />
           </div>
-          <div style="min-width:0">
+          <div>
             <label class="lbl"><i class="ph ph-calendar-check"></i> Due</label>
-            <input id="inv-due" type="date" class="inp-navy inp-flat" style="width:100%;max-width:100%;padding-left:6px;padding-right:2px" />
+            <input id="inv-due" type="date" class="inp-navy inp-flat" style="width:100%;max-width:100%" />
           </div>
         </div>
       </div>
