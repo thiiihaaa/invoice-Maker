@@ -345,7 +345,7 @@
       </div>
 
       <!-- Row 2: Invoice title + fields -->
-      <div class="pt-2 border-t" style="border-color:#FFCEE3">
+      <div class="pt-2 border-t" style="border-color:#FFCEE3;overflow:hidden">
         <!-- Top: title + badge -->
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center gap-2">
@@ -366,13 +366,13 @@
             <input id="inv-num" type="text" placeholder="#001" value="#001"
                    class="inp-navy inp-flat text-right" style="width:100%" />
           </div>
-          <div>
+          <div style="min-width:0;overflow:hidden">
             <label class="lbl"><i class="ph ph-calendar-blank"></i> Date</label>
-            <input id="inv-date" type="date" class="inp-navy inp-flat" style="width:100%;padding-right:6px" />
+            <input id="inv-date" type="date" class="inp-navy inp-flat" style="width:100%;max-width:100%;padding-right:4px" />
           </div>
-          <div>
+          <div style="min-width:0;overflow:hidden">
             <label class="lbl"><i class="ph ph-calendar-check"></i> Due</label>
-            <input id="inv-due" type="date" class="inp-navy inp-flat" style="width:100%;padding-right:6px" />
+            <input id="inv-due" type="date" class="inp-navy inp-flat" style="width:100%;max-width:100%;padding-right:4px" />
           </div>
         </div>
       </div>
