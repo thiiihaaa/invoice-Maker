@@ -890,7 +890,8 @@ ${content}
     let rowIdx = 0;
     document.querySelectorAll('#item-rows > div[id^="row-"]').forEach(row => {
       rowIdx++;
-      const descEl  = row.querySelector('input[placeholder*="description"]');
+      // Pick whichever description input has a value (mobile or desktop)
+      const descEl  = Array.from(row.querySelectorAll('input.item-desc')).find(el => el.value) || row.querySelector('input.item-desc');
       const qtyEl   = row.querySelector('[id$="-qty"]') || row.querySelector('[id$="-qty-m"]');
       const priceEl = row.querySelector('[id$="-price-d"]') || row.querySelector('[id$="-price-m"]');
       const totalEl = row.querySelector('[id$="-total"]:not([id$="-total-m"])');
@@ -1100,7 +1101,7 @@ ${content}
     let rowIdx = 0;
     document.querySelectorAll('#item-rows > div[id^="row-"]').forEach(row => {
       rowIdx++;
-      const descEl  = row.querySelector('input[placeholder*="description"]');
+      const descEl  = Array.from(row.querySelectorAll('input.item-desc')).find(el => el.value) || row.querySelector('input.item-desc');
       const qtyEl   = row.querySelector('[id$="-qty-m"]') || row.querySelector('[id$="-qty"]');
       const priceEl = row.querySelector('[id$="-price-m"]') || row.querySelector('[id$="-price-d"]');
       const totalEl = row.querySelector('[id$="-total"]:not([id$="-total-m"])');
