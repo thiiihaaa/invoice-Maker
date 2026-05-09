@@ -12,6 +12,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Invoice" />
+  <meta name="format-detection" content="telephone=no, email=no, address=no" />
   <link rel="apple-touch-icon" href="icon.svg" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
 
@@ -56,6 +57,18 @@
     }
     input[type=number]::-webkit-inner-spin-button,
     input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+    /* Prevent browser auto-linking phone/email values */
+    input[type="tel"], input[type="email"] {
+      color: #021A54 !important;
+      text-decoration: none !important;
+      -webkit-text-decoration: none !important;
+    }
+    a[href^="tel"], a[href^="sms"] {
+      color: inherit !important;
+      text-decoration: none !important;
+      pointer-events: none;
+    }
 
     /* Force iOS to respect CSS width on date inputs */
     input[type="date"] {
@@ -980,15 +993,15 @@ ${content}
         <tr>
           <!-- Bill To (left) -->
           <td style="padding:14px 20px;vertical-align:top">
-            <div style="font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#021A54;opacity:.5;margin-bottom:4px;line-height:1">Bill To</div>
-            <div style="font-size:13px;font-weight:700;color:#021A54;line-height:1.2">${cName}</div>
-            ${cEmail ? `<div style="font-size:10px;color:rgba(2,26,84,0.6);margin-top:3px">${cEmail}</div>` : ''}
+            <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#021A54;opacity:.5;margin-bottom:5px;line-height:1">Bill To</div>
+            <div style="font-size:16px;font-weight:700;color:#021A54;line-height:1.2">${cName}</div>
+            ${cEmail ? `<div style="font-size:12px;color:rgba(2,26,84,0.6);margin-top:4px">${cEmail}</div>` : ''}
           </td>
           <!-- Business (middle) -->
           <td style="padding:14px 16px;vertical-align:top;text-align:center">
-            ${!logoHidden && logoSrc ? `<img src="${logoSrc}" style="width:40px;height:40px;border-radius:6px;object-fit:contain;display:block;margin:0 auto 5px" />` : ''}
-            <div style="font-size:14px;font-weight:800;color:#021A54;line-height:1.25">${bizName}</div>
-            <div style="font-size:10px;color:rgba(2,26,84,0.6);margin-top:3px;line-height:1.55">${addrHtml || '&nbsp;'}</div>
+            ${!logoHidden && logoSrc ? `<img src="${logoSrc}" style="width:44px;height:44px;border-radius:6px;object-fit:contain;display:block;margin:0 auto 6px" />` : ''}
+            <div style="font-size:17px;font-weight:800;color:#021A54;line-height:1.25">${bizName}</div>
+            <div style="font-size:12px;color:rgba(2,26,84,0.6);margin-top:4px;line-height:1.6">${addrHtml || '&nbsp;'}</div>
           </td>
           <!-- Invoice (right) -->
           <td style="padding:14px 20px;vertical-align:top;text-align:right">
@@ -1191,16 +1204,16 @@ ${content}
       <div style="background:#B0D4F1;padding:10px 16px;display:flex;align-items:center;gap:12px">
         <!-- Bill To -->
         <div style="flex:1;min-width:0">
-          <div style="font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#021A54;opacity:.5;margin-bottom:3px">Bill To</div>
-          <div style="font-size:12px;font-weight:700;color:#021A54;line-height:1.2">${cName}</div>
-          <div style="font-size:9px;color:rgba(2,26,84,0.6);margin-top:2px">${cEmail}</div>
+          <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#021A54;opacity:.5;margin-bottom:4px">Bill To</div>
+          <div style="font-size:15px;font-weight:700;color:#021A54;line-height:1.2">${cName}</div>
+          <div style="font-size:11px;color:rgba(2,26,84,0.6);margin-top:3px">${cEmail}</div>
         </div>
         <!-- Business -->
         <div style="display:flex;flex-direction:column;align-items:center;text-align:center;flex:1;min-width:0;padding:0 14px">
-          ${!logoHidden && logoSrc ? `<img src="${logoSrc}" style="width:36px;height:36px;border-radius:8px;object-fit:contain;border:1px solid rgba(147,197,253,0.6);margin-bottom:4px" />` : ''}
+          ${!logoHidden && logoSrc ? `<img src="${logoSrc}" style="width:40px;height:40px;border-radius:8px;object-fit:contain;border:1px solid rgba(147,197,253,0.6);margin-bottom:5px" />` : ''}
           <div style="min-width:0">
-            <div style="font-size:13px;font-weight:800;color:#021A54;line-height:1.2">${bizName}</div>
-            <div style="font-size:9px;color:rgba(2,26,84,0.6);margin-top:2px;white-space:pre-line;line-height:1.4">${bizAddress}</div>
+            <div style="font-size:16px;font-weight:800;color:#021A54;line-height:1.2">${bizName}</div>
+            <div style="font-size:11px;color:rgba(2,26,84,0.6);margin-top:3px;white-space:pre-line;line-height:1.5">${bizAddress}</div>
           </div>
         </div>
         <!-- Invoice -->
