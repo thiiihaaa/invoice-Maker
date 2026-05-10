@@ -548,6 +548,19 @@
 
   <!-- ─── STICKY BOTTOM BAR (mobile only) ─── -->
   <div class="sticky-bar sm:hidden no-print">
+    <!-- Status buttons -->
+    <div class="flex gap-2 mb-2">
+      <button onclick="setStatus('unpaid')" id="status-unpaid-m"
+              class="status-btn flex-1 rounded-2xl text-xs font-semibold border flex items-center justify-center gap-1 transition active:scale-95"
+              style="background:#fff0f7;color:#FF85BB;border-color:#FFCEE3;min-height:36px">
+        <i class="ph ph-clock-countdown"></i> Unpaid
+      </button>
+      <button onclick="setStatus('paid')" id="status-paid-m"
+              class="status-btn flex-1 rounded-2xl text-xs font-semibold border flex items-center justify-center gap-1 transition active:scale-95"
+              style="background:#e8ecf5;color:#021A54;border-color:#d0d8ef;min-height:36px">
+        <i class="ph ph-check-circle"></i> Paid
+      </button>
+    </div>
     <!-- Action buttons -->
     <div class="grid grid-cols-4 gap-1.5">
       <button onclick="clearAll()"
@@ -765,8 +778,9 @@
   function setStatus(s) {
     if (cur === s) { resetStatus(); return; }
     resetStatus(); cur = s;
-    const btn = document.getElementById('status-' + s);
-    if (btn) btn.setAttribute('style', SS[s].active);
+    // desktop + mobile buttons
+    [document.getElementById('status-' + s), document.getElementById('status-' + s + '-m')]
+      .forEach(btn => { if (btn) btn.setAttribute('style', SS[s].active); });
     const badge = document.getElementById('status-badge');
     badge.style.background = SS[s].badge;
     badge.style.color = SS[s].badgeText || 'white';
@@ -775,8 +789,8 @@
 
   function resetStatus() {
     Object.keys(SS).forEach(s => {
-      const btn = document.getElementById('status-' + s);
-      if (btn) btn.setAttribute('style', SS[s].style);
+      [document.getElementById('status-' + s), document.getElementById('status-' + s + '-m')]
+        .forEach(btn => { if (btn) btn.setAttribute('style', SS[s].style); });
     });
     const b = document.getElementById('status-badge');
     b.style.background = '#FF85BB';
