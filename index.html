@@ -16,6 +16,7 @@
   <link rel="apple-touch-icon" href="icon.svg" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
 
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -400,6 +401,24 @@
     <!-- ─── HEADER ─── -->
     <div id="card-header" class="glass rounded-3xl p-4 sm:p-5" style="box-shadow:0 4px 24px rgba(255,133,187,0.15);overflow:hidden">
 
+      <!-- Auth strip -->
+      <div class="flex justify-between items-center mb-3 no-print">
+        <span class="text-xs font-bold tracking-widest" style="color:#021A54;opacity:.25">INVOICE MAKER</span>
+        <div class="flex items-center gap-2">
+          <button id="sign-in-btn" onclick="signInWithGoogle()"
+                  class="flex items-center gap-1.5 px-3 rounded-2xl text-xs font-semibold transition active:scale-95"
+                  style="background:#e8ecf5;color:#021A54;min-height:32px;border:1.5px solid #d0d8ef">
+            <i class="ph ph-google-logo" style="font-size:14px"></i> Sign in
+          </button>
+          <div id="user-chip" class="hidden items-center gap-2 cursor-pointer px-2 py-1 rounded-2xl transition active:scale-95"
+               style="background:#e8ecf5;border:1.5px solid #d0d8ef" onclick="toggleUserMenu()">
+            <img id="user-avatar" class="w-6 h-6 rounded-full" style="border:1.5px solid var(--primary)" />
+            <span id="user-name" class="text-xs font-bold" style="color:#021A54"></span>
+            <i class="ph ph-caret-down" style="font-size:11px;color:#021A54;opacity:.5"></i>
+          </div>
+        </div>
+      </div>
+
       <!-- Row 1: Logo + Business info -->
       <div class="flex gap-3 mb-3">
         <!-- Logo -->
@@ -588,10 +607,13 @@
           <button onclick="setStatus('paid')"    id="status-paid"    class="status-btn px-3 rounded-full text-xs font-semibold border transition flex items-center gap-1"><i class="ph ph-check-circle"></i> Paid</button>
         </div>
       </div>
-      <div class="no-print flex gap-2">
+      <div class="no-print flex gap-2 flex-wrap">
         <button onclick="clearAll()" class="px-4 rounded-2xl text-sm font-medium transition flex items-center gap-1.5" style="background:#F5F5F5; color:#021A54"><i class="ph ph-arrow-counter-clockwise"></i> Clear</button>
-        <button onclick="showPreview()" class="px-4 rounded-2xl text-sm font-semibold transition flex items-center gap-1.5" style="background:#e8ecf5; color:#021A54; border:1.5px solid #d0d8ef"><i class="ph ph-eye"></i> Preview</button>
-        <button onclick="savePNG()" class="px-4 rounded-2xl text-sm font-semibold transition flex items-center gap-1.5" style="background:#fff0f7; color:#FF85BB; border:1.5px solid #FFCEE3"><i class="ph ph-image"></i> Save PNG</button>
+        <button onclick="showHistory()" class="px-4 rounded-2xl text-sm font-semibold transition flex items-center gap-1.5" style="background:#e8ecf5;color:#021A54;border:1.5px solid #d0d8ef"><i class="ph ph-clock-counter-clockwise"></i> History</button>
+        <button onclick="saveToCloud()" class="px-4 rounded-2xl text-sm font-semibold transition flex items-center gap-1.5" style="background:#e8f4ff;color:#021A54;border:1.5px solid #B0D4F1"><i class="ph ph-cloud-arrow-up"></i> Save</button>
+        <button onclick="logToSheet()" class="px-4 rounded-2xl text-sm font-semibold transition flex items-center gap-1.5" style="background:#e8f5e9;color:#2e7d32;border:1.5px solid #a5d6a7"><i class="ph ph-table"></i> Log to Sheet</button>
+        <button onclick="showPreview()" class="px-4 rounded-2xl text-sm font-semibold transition flex items-center gap-1.5" style="background:#fff0f7; color:#FF85BB; border:1.5px solid #FFCEE3"><i class="ph ph-eye"></i> Preview</button>
+        <button onclick="savePNG()" class="px-4 rounded-2xl text-sm font-semibold transition flex items-center gap-1.5" style="background:#fff0f7; color:#FF85BB; border:1.5px solid #FFCEE3"><i class="ph ph-image"></i> PNG</button>
         <button onclick="printInvoice()" class="px-5 rounded-2xl text-white text-sm font-semibold transition flex items-center gap-2" style="background:linear-gradient(135deg,#FF85BB,#e0609a); box-shadow:0 4px 14px rgba(255,133,187,0.4)"><i class="ph ph-printer"></i> Print / PDF</button>
       </div>
     </div>
@@ -602,6 +624,24 @@
 
     <!-- ─── BOTTOM BAR (mobile only) ─── -->
     <div class="sticky-bar sm:hidden no-print" style="margin-bottom:24px">
+    <!-- Cloud buttons -->
+    <div class="grid grid-cols-3 gap-1.5 mb-2">
+      <button onclick="saveToCloud()"
+              class="rounded-2xl text-xs font-bold flex items-center justify-center gap-1 transition active:scale-95"
+              style="background:#e8f4ff;color:#021A54;border:1.5px solid #B0D4F1;min-height:36px">
+        <i class="ph ph-cloud-arrow-up"></i> Save
+      </button>
+      <button onclick="logToSheet()"
+              class="rounded-2xl text-xs font-bold flex items-center justify-center gap-1 transition active:scale-95"
+              style="background:#e8f5e9;color:#2e7d32;border:1.5px solid #a5d6a7;min-height:36px">
+        <i class="ph ph-table"></i> Sheet
+      </button>
+      <button onclick="showHistory()"
+              class="rounded-2xl text-xs font-bold flex items-center justify-center gap-1 transition active:scale-95"
+              style="background:#e8ecf5;color:#021A54;border:1.5px solid #d0d8ef;min-height:36px">
+        <i class="ph ph-clock-counter-clockwise"></i> History
+      </button>
+    </div>
     <!-- Status buttons -->
     <div class="flex gap-2 mb-2">
       <button onclick="setStatus('unpaid')" id="status-unpaid-m"
@@ -659,6 +699,33 @@
     </div>
   </div>
 
+  <!-- ── User menu (fixed dropdown) ── -->
+  <div id="user-menu" class="hidden fixed z-50 glass rounded-2xl p-2 no-print" style="min-width:180px;border:1.5px solid #FFCEE3;box-shadow:0 8px 32px rgba(2,26,84,0.15)">
+    <div id="user-email-label" class="px-3 py-1 text-xs truncate" style="color:#021A54;opacity:.45"></div>
+    <div style="height:1px;background:#FFCEE3;margin:4px 0"></div>
+    <button onclick="signOut()" class="w-full text-left px-3 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition active:scale-95" style="color:#FF85BB;min-height:auto">
+      <i class="ph ph-sign-out"></i> Sign out
+    </button>
+  </div>
+
+  <!-- ── History modal ── -->
+  <div id="history-modal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center no-print" style="background:rgba(2,26,84,0.35);backdrop-filter:blur(4px)">
+    <div class="glass rounded-t-3xl sm:rounded-3xl w-full sm:max-w-md p-5" style="max-height:80vh;overflow-y:auto;box-shadow:0 -8px 40px rgba(2,26,84,0.2)">
+      <div class="flex items-center justify-between mb-4">
+        <span class="font-bold text-base flex items-center gap-2" style="color:#021A54">
+          <i class="ph ph-clock-counter-clockwise" style="color:var(--primary)"></i> Invoice History
+        </span>
+        <button onclick="closeHistory()" class="btn-icon rounded-xl" style="color:#021A54;opacity:.4;min-height:36px;min-width:36px"><i class="ph ph-x text-xl"></i></button>
+      </div>
+      <div id="history-list"></div>
+    </div>
+  </div>
+
+  <!-- ── Flash toast ── -->
+  <div id="flash-toast" class="hidden fixed top-5 left-1/2 -translate-x-1/2 z-50 no-print">
+    <div id="flash-text" class="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-white" style="background:#021A54;box-shadow:0 4px 16px rgba(2,26,84,0.3);white-space:nowrap"></div>
+  </div>
+
   <!-- Offline toast -->
   <div id="offline-toast" class="hidden fixed top-5 left-1/2 -translate-x-1/2 z-50 no-print">
     <div class="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-white" style="background:#021A54;box-shadow:0 4px 16px rgba(2,26,84,0.3)">
@@ -677,6 +744,232 @@
   /* ══════════════════════════════════
      THEMES
   ══════════════════════════════════ */
+
+  /* ══════════════════════════════════
+     CLOUD / GAS / AUTH
+  ══════════════════════════════════ */
+  const GAS_URL   = 'https://script.google.com/macros/s/AKfycbweJERIQMCgaBKphmWWqVZ0d1Hm5s4wnrwDNa_dnn0hxxuvsFDzK-FTdow-KkU3Dv9r/exec';
+  const CLIENT_ID = '88796990745-40f00aregrbv35t70f9jignl9u3gej16.apps.googleusercontent.com';
+
+  let authToken        = null;
+  let authUser         = null;
+  let currentInvoiceId = null;
+
+  /* ── Google Sign-In init ── */
+  function initGoogleSignIn() {
+    if (typeof google === 'undefined') return;
+    google.accounts.id.initialize({ client_id: CLIENT_ID, callback: handleCredential, auto_select: true });
+    // Restore saved token
+    const saved = localStorage.getItem('gsi_token');
+    if (saved) {
+      try {
+        const p = JSON.parse(atob(saved.split('.')[1]));
+        if (p.exp * 1000 > Date.now()) {
+          authToken = saved;
+          authUser  = { email: p.email, name: p.name, picture: p.picture };
+          updateAuthUI(); return;
+        }
+      } catch(e) {}
+      localStorage.removeItem('gsi_token');
+    }
+    google.accounts.id.prompt();
+  }
+  window.addEventListener('load', () => setTimeout(initGoogleSignIn, 800));
+
+  function handleCredential(response) {
+    authToken = response.credential;
+    localStorage.setItem('gsi_token', authToken);
+    const p = JSON.parse(atob(authToken.split('.')[1]));
+    authUser = { email: p.email, name: p.name, picture: p.picture };
+    updateAuthUI();
+    showFlash('👋 Welcome, ' + authUser.name.split(' ')[0] + '!');
+  }
+
+  function signInWithGoogle() {
+    if (typeof google === 'undefined') { showFlash('❌ Sign-in not ready, try again'); return; }
+    google.accounts.id.prompt();
+  }
+
+  function signOut() {
+    authToken = null; authUser = null; currentInvoiceId = null;
+    localStorage.removeItem('gsi_token');
+    google.accounts.id.disableAutoSelect();
+    updateAuthUI();
+    closeUserMenu();
+    showFlash('👋 Signed out');
+  }
+
+  function updateAuthUI() {
+    const signInBtn = document.getElementById('sign-in-btn');
+    const chip      = document.getElementById('user-chip');
+    if (authUser) {
+      signInBtn?.classList.add('hidden');
+      chip?.classList.remove('hidden');
+      chip?.classList.add('flex');
+      const av = document.getElementById('user-avatar');
+      const un = document.getElementById('user-name');
+      if (av) av.src = authUser.picture;
+      if (un) un.textContent = authUser.name.split(' ')[0];
+    } else {
+      signInBtn?.classList.remove('hidden');
+      chip?.classList.add('hidden');
+      chip?.classList.remove('flex');
+    }
+  }
+
+  function toggleUserMenu() {
+    const menu = document.getElementById('user-menu');
+    const chip = document.getElementById('user-chip');
+    if (menu.classList.contains('hidden')) {
+      document.getElementById('user-email-label').textContent = authUser?.email || '';
+      const r = chip.getBoundingClientRect();
+      menu.style.top  = (r.bottom + 8) + 'px';
+      menu.style.right = (window.innerWidth - r.right) + 'px';
+      menu.classList.remove('hidden');
+      setTimeout(() => document.addEventListener('click', closeUserMenu, { once: true }), 10);
+    } else { closeUserMenu(); }
+  }
+
+  function closeUserMenu() {
+    document.getElementById('user-menu')?.classList.add('hidden');
+  }
+
+  /* ── GAS API helpers ── */
+  async function gasPost(action, extra = {}) {
+    try {
+      const r = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action, token: authToken, ...extra }) });
+      return await r.json();
+    } catch(e) { return { error: e.message }; }
+  }
+
+  async function gasGet(params = {}) {
+    try {
+      const url = new URL(GAS_URL);
+      url.searchParams.set('token', authToken);
+      Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+      const r = await fetch(url.toString());
+      return await r.json();
+    } catch(e) { return { error: e.message }; }
+  }
+
+  /* ── Collect all invoice data ── */
+  function collectInvoiceData() {
+    const items = [];
+    document.querySelectorAll('#item-rows > div[id^="row-"]').forEach(row => {
+      const descEl  = Array.from(row.querySelectorAll('input.item-desc')).find(el => el.value) || row.querySelector('input.item-desc');
+      const qtyEl   = row.querySelector('[id$="-qty"]');
+      const priceEl = row.querySelector('[id$="-price-d"]');
+      items.push({ desc: descEl?.value || '', qty: qtyEl?.value || '1', price: priceEl?.value || '0' });
+    });
+    return {
+      id:          currentInvoiceId,
+      invNum:      val('inv-num'),
+      invDate:     fmtDate(val('inv-date')),
+      invDue:      fmtDate(val('inv-due')),
+      clientName:  val('client-name'),
+      clientPhone: val('client-email'),
+      bizName:     val('biz-name'),
+      bizAddr:     val('biz-address'),
+      notes:       document.getElementById('notes').value,
+      subtotal:    document.getElementById('subtotal').textContent,
+      discount:    document.getElementById('discount-amount').textContent,
+      grandTotal:  document.getElementById('grand-total').textContent,
+      status:      cur || 'unpaid',
+      items,
+    };
+  }
+
+  /* ── Save to Cloud (DB) ── */
+  async function saveToCloud() {
+    if (!authToken) { signInWithGoogle(); return; }
+    setBtnLoading('[onclick="saveToCloud()"]', true);
+    const result = await gasPost('saveInvoice', { invoice: collectInvoiceData() });
+    setBtnLoading('[onclick="saveToCloud()"]', false);
+    if (result.success) { currentInvoiceId = result.id; showFlash('☁️ Saved to cloud!'); }
+    else showFlash('❌ ' + (result.error || 'Save failed'));
+  }
+
+  /* ── Log to Sheet ── */
+  async function logToSheet() {
+    if (!authToken) { signInWithGoogle(); return; }
+    setBtnLoading('[onclick="logToSheet()"]', true);
+    const result = await gasPost('logInvoice', { invoice: collectInvoiceData() });
+    setBtnLoading('[onclick="logToSheet()"]', false);
+    if (result.success) showFlash('📊 Logged to Sheet!');
+    else showFlash('❌ ' + (result.error || 'Log failed'));
+  }
+
+  /* ── History ── */
+  async function showHistory() {
+    if (!authToken) { signInWithGoogle(); return; }
+    const modal = document.getElementById('history-modal');
+    const list  = document.getElementById('history-list');
+    list.innerHTML = '<div class="text-center py-8" style="color:#021A54;opacity:.35"><i class="ph ph-spinner-gap" style="font-size:2rem;animation:spin .7s linear infinite;display:block;margin:0 auto 8px"></i>Loading…</div>';
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+
+    const result = await gasGet({ action: 'listInvoices' });
+    if (result.error) { list.innerHTML = `<div class="text-center py-6 text-sm" style="color:#FF85BB">${result.error}</div>`; return; }
+
+    const invoices = result.invoices || [];
+    if (!invoices.length) {
+      list.innerHTML = '<div class="text-center py-10 text-sm" style="color:#021A54;opacity:.35"><i class="ph ph-cloud-slash" style="font-size:2.5rem;display:block;margin:0 auto 10px"></i>No saved invoices yet</div>';
+      return;
+    }
+    list.innerHTML = invoices.map(inv => `
+      <div class="flex items-center justify-between p-3 rounded-2xl mb-2 cursor-pointer transition active:scale-98"
+           style="background:rgba(255,255,255,0.7);border:1.5px solid #FFCEE3"
+           onclick="loadCloudInvoice('${inv.id}')">
+        <div>
+          <div class="text-sm font-bold" style="color:#021A54">${inv.invNum || 'Invoice'}</div>
+          <div class="text-xs mt-0.5" style="color:#021A54;opacity:.45">${new Date(inv.updatedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</div>
+        </div>
+        <i class="ph ph-arrow-circle-right text-2xl" style="color:var(--primary)"></i>
+      </div>
+    `).join('');
+  }
+
+  function closeHistory() {
+    document.getElementById('history-modal').classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  async function loadCloudInvoice(id) {
+    closeHistory();
+    showFlash('⏳ Loading invoice…');
+    const result = await gasGet({ action: 'getInvoice', id });
+    if (result.error || !result.invoice) { showFlash('❌ Could not load invoice'); return; }
+    const inv = result.invoice;
+    currentInvoiceId = id;
+    const set = (elId, v) => { const el = document.getElementById(elId); if (el && v !== undefined) el.value = v; };
+    set('biz-name', inv.bizName); set('biz-address', inv.bizAddr);
+    set('client-name', inv.clientName); set('client-email', inv.clientPhone);
+    set('inv-num', inv.invNum);
+    if (inv.notes !== undefined) document.getElementById('notes').value = inv.notes;
+    document.getElementById('item-rows').innerHTML = ''; rowCount = 0;
+    (inv.items || []).forEach(it => addRow(it.desc, parseFloat(it.qty)||1, parseFloat(it.price)||0));
+    if (inv.status) setStatus(inv.status);
+    calcTotals(); updateItemCount();
+    showFlash('📄 Invoice loaded!');
+  }
+
+  /* ── Helpers ── */
+  function showFlash(msg) {
+    const el = document.getElementById('flash-toast');
+    const tx = document.getElementById('flash-text');
+    if (!el || !tx) return;
+    tx.textContent = msg; el.classList.remove('hidden');
+    clearTimeout(el._t);
+    el._t = setTimeout(() => el.classList.add('hidden'), 3000);
+  }
+
+  function setBtnLoading(selector, loading) {
+    document.querySelectorAll(selector).forEach(b => {
+      b.disabled = loading;
+      if (loading) { b.dataset.orig = b.innerHTML; b.innerHTML = '<i class="ph ph-spinner-gap" style="animation:spin .7s linear infinite"></i>'; }
+      else if (b.dataset.orig) b.innerHTML = b.dataset.orig;
+    });
+  }
   const THEMES = {
     blush:    { primary:'#FF85BB', light:'#FFCEE3', pale:'#fff0f7', dark:'#e0609a', blob1:'#FFCEE3', blob2:'#FF85BB', bg:'linear-gradient(135deg,#FFCEE3 0%,#F5F5F5 55%,#e8ecf5 100%)' },
     lavender: { primary:'#a78bfa', light:'#ede9fe', pale:'#faf5ff', dark:'#7c3aed', blob1:'#ede9fe', blob2:'#a78bfa', bg:'linear-gradient(135deg,#ede9fe 0%,#F5F5F5 55%,#f3e8ff 100%)' },
