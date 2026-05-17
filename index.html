@@ -408,7 +408,7 @@
         <!-- Title -->
         <div class="serif text-4xl mb-1" style="color:#021A54">Invoice</div>
         <div class="text-sm font-semibold mb-1" style="color:#FF85BB">by Kuphoria</div>
-        <div class="text-xs mb-8" style="color:#021A54;opacity:.45">Cute &amp; minimal invoice maker</div>
+        <div class="mb-8"></div>
 
         <!-- Google Sign-In rendered button -->
         <div id="google-signin-container" class="flex justify-center w-full"></div>
@@ -820,7 +820,7 @@
     authUser = { email: p.email, name: p.name, picture: p.picture };
     updateAuthUI();
     hideLoginScreen();
-    showFlash('👋 Welcome, ' + authUser.name.split(' ')[0] + '!');
+    showFlash('Welcome, ' + authUser.name.split(' ')[0] + '!');
   }
 
   function revealAfterLoad() {
