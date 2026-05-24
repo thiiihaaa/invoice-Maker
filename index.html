@@ -52,8 +52,7 @@
     * { font-family: 'Nunito', 'Noto Sans Myanmar', 'Myanmar Text', sans-serif; -webkit-tap-highlight-color: transparent; }
     .serif { font-family: 'Pacifico', cursive; }
 
-    html { scroll-behavior: smooth; }
-    body  { background: var(--body-bg); min-height: 100dvh; }
+    html, body { scroll-behavior: smooth; background: var(--body-bg); min-height: 100dvh; }
 
     /* ── App loader ── */
     #app-loader {
@@ -236,13 +235,14 @@
       transform: rotate(-90deg);
     }
     .sec-content {
-      overflow: hidden;
-      max-height: 2000px;
+      overflow: visible;
+      max-height: 99999px;
       opacity: 1;
-      transition: max-height .32s ease, opacity .22s ease;
+      transition: max-height .35s ease, opacity .22s ease;
     }
     .sec-content[data-collapsed="true"] {
       max-height: 0 !important;
+      overflow: hidden !important;
       opacity: 0;
     }
 
