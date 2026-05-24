@@ -411,7 +411,9 @@
         <div class="mb-8"></div>
 
         <!-- Google Sign-In rendered button -->
-        <div id="google-signin-container" class="flex justify-center w-full"></div>
+        <div class="w-full rounded-2xl overflow-hidden" style="border:2px solid #FFCEE3;box-shadow:0 4px 18px rgba(255,133,187,0.18)">
+          <div id="google-signin-container" class="flex justify-center w-full"></div>
+        </div>
         <!-- Fallback button shown until GSI renders -->
         <button id="login-google-btn" onclick="signInWithGoogle()"
                 class="w-full flex items-center justify-center gap-3 rounded-2xl font-semibold text-sm transition active:scale-95"
@@ -837,8 +839,8 @@
       google.accounts.id.initialize({ client_id: CLIENT_ID, callback: handleCredential, auto_select: false });
       const container = document.getElementById('google-signin-container');
       google.accounts.id.renderButton(container, {
-        theme: 'filled_black', size: 'large', shape: 'pill',
-        text: 'continue_with', width: 280
+        theme: 'outline', size: 'large', shape: 'rectangular',
+        text: 'continue_with', width: 320, locale: 'en'
       });
       // Hide fallback button once GSI button is rendered
       document.getElementById('login-google-btn').style.display = 'none';
