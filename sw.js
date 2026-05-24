@@ -3,7 +3,7 @@
    Cache-first for local, network-first for CDN
 ═══════════════════════════════════════ */
 
-const CACHE  = 'invoice-maker-v23';
+const CACHE  = 'invoice-maker-v24';
 const SHELL  = [
   './',
   './index.html',
