@@ -1721,8 +1721,7 @@ ${content}
   }
 
   function printFromPreview() {
-    closePreview();
-    setTimeout(() => printInvoice(), 120);
+    printInvoice();
   }
 
   function printInvoice() {
@@ -1818,23 +1817,21 @@ ${content}
     <div class="pv" style="background:white;border-radius:14px;overflow:hidden;box-shadow:0 8px 40px rgba(2,26,84,0.18);max-width:700px;margin:0 auto">
 
       <!-- Header (3-column: bill to | business | invoice) -->
-      <div style="background:#B0D4F1;padding:10px 16px;display:flex;align-items:center;gap:12px">
+      <div style="background:#B0D4F1;padding:10px 16px;display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center;gap:12px">
         <!-- Bill To -->
-        <div style="flex:1;min-width:0">
+        <div style="min-width:0">
           <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#021A54;opacity:.5;margin-bottom:4px">Bill To</div>
           <div style="font-size:15px;font-weight:700;color:#021A54;line-height:1.2">${cName}</div>
           <div style="font-size:11px;color:rgba(2,26,84,0.6);margin-top:3px">${cEmail}</div>
         </div>
-        <!-- Business -->
-        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;flex:1;min-width:0;padding:0 14px">
+        <!-- Business (truly centered) -->
+        <div style="display:flex;flex-direction:column;align-items:center;text-align:center;min-width:0">
           ${!logoHidden && logoSrc ? `<img src="${logoSrc}" style="width:40px;height:40px;border-radius:8px;object-fit:contain;border:1px solid rgba(147,197,253,0.6);margin-bottom:5px" />` : ''}
-          <div style="min-width:0">
-            <div style="font-size:16px;font-weight:800;color:#021A54;line-height:1.2">${bizName}</div>
-            <div style="font-size:11px;color:rgba(2,26,84,0.6);margin-top:3px;white-space:pre-line;line-height:1.5">${bizAddress}</div>
-          </div>
+          <div style="font-size:16px;font-weight:800;color:#021A54;line-height:1.2">${bizName}</div>
+          <div style="font-size:11px;color:rgba(2,26,84,0.6);margin-top:3px;white-space:pre-line;line-height:1.5">${bizAddress}</div>
         </div>
         <!-- Invoice -->
-        <div style="text-align:right;flex-shrink:0">
+        <div style="text-align:right">
           <div class="pac" style="font-size:20px;color:#021A54;line-height:1.1;margin-bottom:4px">Invoice</div>
           <table style="margin-left:auto;font-size:9px;border-collapse:collapse;color:#021A54">
             <tr><td style="padding:1px 6px 1px 0;opacity:.55">Status</td><td style="font-weight:800;background:${badgeBg};color:${badgeBg === '#B0D4F1' ? '#021A54' : 'white'};padding:1px 6px;border-radius:3px">${badge.textContent.trim()}</td></tr>
@@ -1943,10 +1940,14 @@ ${content}
     <div class="flex-shrink-0 flex items-center justify-between px-4 py-3 sm:px-6"
          style="background:rgba(255,255,255,0.95);border-bottom:1.5px solid #FFCEE3;backdrop-filter:blur(12px)">
       <div class="flex items-center gap-2">
+        <button onclick="closePreview()"
+                class="flex items-center gap-1.5 px-3 rounded-2xl font-bold transition active:scale-95"
+                style="background:#F5F5F5;color:#021A54;min-height:40px;font-size:14px">
+          <i class="ph ph-arrow-left text-lg"></i> <span>Back</span>
+        </button>
         <span style="background:#fff0f7;color:#FF85BB;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:5px">
           <i class="ph ph-eye"></i> Preview
         </span>
-        <span style="font-size:12px;color:#021A54;opacity:.45">Looks exactly like the printed invoice</span>
       </div>
       <div class="flex items-center gap-2">
         <button onclick="savePNG()"
@@ -1958,11 +1959,6 @@ ${content}
                 class="flex items-center gap-1.5 px-4 rounded-2xl text-white text-sm font-bold transition active:scale-95"
                 style="background:linear-gradient(135deg,#FF85BB,#e0609a);box-shadow:0 4px 12px rgba(255,133,187,0.4);min-height:40px">
           <i class="ph ph-printer"></i> <span class="hidden sm:inline">Print / PDF</span>
-        </button>
-        <button onclick="closePreview()"
-                class="flex items-center justify-center rounded-2xl transition active:scale-95"
-                style="background:#F5F5F5;color:#021A54;min-height:40px;min-width:40px">
-          <i class="ph ph-x text-lg"></i>
         </button>
       </div>
     </div>
